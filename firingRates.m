@@ -1,5 +1,7 @@
-function r = firingRates(spikeTimes)
-    windowSize = 5*60; % in seconds (5 mins)
+function r = firingRates(spikeTimes,windowSize)
+    if nargin < 2
+        windowSize = 20*60; % in seconds (20 mins)
+    end
     nWindows = ceil(max(spikeTimes)/windowSize);
     r = zeros(1,nWindows);
     for iSpike=1:length(spikeTimes)
