@@ -37,6 +37,8 @@ function data = addFromFile(data,fileData)
             data.unitIds(nUnits,1:2) = [chNum unitNum];
             unitRows = ch(:,2) == unitNum;
             data.unitSpikeTimes{nUnits} = ch(unitRows,3);
-        end
+        end        
     end
+    data.nChannels = nChannels;
+    data.nUnits = nUnits;
 end
