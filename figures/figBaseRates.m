@@ -5,4 +5,5 @@ function figBaseRates()
         subplot(2,2,i)
         baseRates(loadData(keys{i},1));    
     end
+    topLevelTitle('Distribution of base firing rates')
 end

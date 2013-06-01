@@ -8,15 +8,20 @@ figure; plot(firingRates(data.unitSpikeTimes{1}));
 ISIs = calcISIs(data.unitSpikeTimes{1});
 
 %%
-figure; plot(cellfun(@(x) 1/mean(x), ISIs)); % same as firingRates
-
-figure; plot(cellfun(@(x) 1/median(x), ISIs));
-figure; plot(cellfun(@(x) median(x), ISIs));
-figure; plot(cellfun(@(x) log(std(x)), ISIs));
-figure; plot(cellfun(@(x) std(x)/mean(x), ISIs)); % CV
+fRate = @(x) 1/mean(x);
+fMedRate = @(x) 1/median(x);
+fMed = @(x) 1000*median(x); % in msec
+fCV = @(x) std(x)/mean(x);
 
 %%
-mUnitPlot(data, @(x) std(x)/mean(x), 'CV(ISI)')
+
+unitISIstat(ISIs, fRate, 'f [Hz]', 'Mean Firing Rate')
+unitISIstat(ISIs, fMedRate, '1/median(ISI) [Hz]', 'Median Firing Rate')
+unitISIstat(ISIs, fMed, 'median(ISI) [msec]', 'Median ISI')
+unitISIstat(ISIs, fCV, 'CV', 'CV of ISI')
+
+%%
+mUnitPlot(data, @(x) std(x)/mean(x), 'CV time course for all units')
 
 %%
 unitTimeDist(calcISIs(data.unitSpikeTimes{1}))

@@ -7,7 +7,9 @@ function mUnitPlot(data, f, ttl)
         ISIs = calcISIs(data.unitSpikeTimes{iUnit});
         stats = cellfun(f, ISIs);
         subplot(nRows,nCols,iUnit)
-        plot(stats);
+        maxFrame = 35;
+        plot(stats(1:maxFrame));
+        xlim([1 maxFrame])
     end
     if exist('ttl','var')
         topLevelTitle(ttl)

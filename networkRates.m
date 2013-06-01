@@ -7,5 +7,7 @@ function netRate = networkRates(data)
     end
     netRate = sum(allRates,2);
     plot(netRate)
+    xlabel('time [hours]')
+    ylabel('firing rate [Hz]')
     title(sprintf('Session %s',data.sessionKey))
 end

@@ -4,6 +4,10 @@ function r = baseRates(data)
         times = data.unitSpikeTimes{i};
         r(i) = sum(times < 3600) / 3600;
     end
-    hist(r,20)
-    title(sprintf('Session %s: mean=%.2f, median=%.2f',data.sessionKey, mean(r),median(r)))
+    [f,x]=hist(r,20);
+    p = f/sum(f);
+    bar(x,p)
+    xlabel('base rate [Hz]')
+    ylabel('P(r)')
+    title(sprintf('%s: mean=%.2f, median=%.2f',data.sessionKey, mean(r),median(r)))
 end
