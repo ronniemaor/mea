@@ -18,6 +18,9 @@ figure; plot(cellfun(@(x) std(x)/mean(x), ISIs)); % CV
 %%
 mUnitPlot(data, @(x) std(x)/mean(x), 'CV(ISI)')
 
+%% 
+rasterPlot(data)
+
 %%
 figNetworkRates()
 figBaseRates()
