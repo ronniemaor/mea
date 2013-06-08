@@ -1,7 +1,7 @@
 function path = getSessionDataPath(sessionKey)
     baseDataDir = 'C:/data/slutsky2013/data';
     if ~exist(baseDataDir,'dir')
-        error('Could not find baseDataDir')
+        error(['Could not find baseDataDir ', baseDataDir])
     end
     
     config = getSessionConfig(sessionKey);

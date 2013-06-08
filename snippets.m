@@ -1,5 +1,12 @@
 %%
+figNetworkRates()
+figBaseRates()
+
+%%
 data = loadData('s10a');
+
+%% 
+rasterPlot(data)
 
 %%
 figure; plot(firingRates(data.unitSpikeTimes{1}));
@@ -21,14 +28,11 @@ unitISIstat(ISIs, fMed, 'median(ISI) [msec]', 'Median ISI')
 unitISIstat(ISIs, fCV, 'CV', 'CV of ISI')
 
 %%
-mUnitPlot(data, @(x) std(x)/mean(x), 'CV time course for all units')
+mUnitPlot(data, fRate, 'Firing rate time course for all units')
+mUnitPlot(data, fMedRate, 'Median Firing rate time course for all units')
+mUnitPlot(data, fMed, 'Median ISI time course for all units')
+mUnitPlot(data, fCV, 'CV time course for all units')
 
 %%
 unitTimeDist(calcISIs(data.unitSpikeTimes{1}))
 
-%% 
-rasterPlot(data)
-
-%%
-figNetworkRates()
-figBaseRates()
