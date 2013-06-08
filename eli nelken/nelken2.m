@@ -1,10 +1,4 @@
-unitar=struct; % unitnum x iper, fields = elec, unit. never read.
-ar=zeros(76,12*60*100,3); % spike train: unit X time X iper
-if exist('ten_uM')
-    uM=ten_uM;
-else
-    uM=one_uM;
-end
+% This code expects the input data in the variable uM
 
 %%
 % construct spike trains from the spike times => ar
@@ -17,9 +11,11 @@ end
 %     1) electrode number (same for rows of this cell)
 %     2) unit number (only unique within electrode)
 %     3) spike time [sec]
+unitar=struct; % unitnum x iper, fields = elec, unit. never read.
+ar=zeros(76,12*60*100,3); % spike train: unit X time X iper
 for iper=1:3
     unitnum=0;
-    for ii=1:60,
+    for ii=1:100,
         if ~isempty(uM{iper,ii})
             elec=uM{iper,ii}(1,1);
             units=unique(uM{iper,ii}(:,2)); % units for this electrode
@@ -52,6 +48,7 @@ for ii=1:3,
     psur(:,ii)=filtfilt(win,1,squeeze(sum(sur(:,:,ii)))); % smoothed total network activity on shuffled data
     figure(ii);
     plot([popr(:,ii) psur(:,ii)]); % plot original and shuffled smoothed rates
+    title(sprintf('timeframe %d',ii))
     ax(ii)=gca;
 end
 linkaxes(ax); % good to know!

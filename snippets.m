@@ -36,3 +36,5 @@ mUnitPlot(data, fCV, 'CV time course for all units')
 %%
 unitTimeDist(calcISIs(data.unitSpikeTimes{1}))
 
+%% Working with Eli Nelken's code
+uM = toNelkenStyle(loadData('s10a'));
