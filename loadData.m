@@ -8,6 +8,7 @@ function data = loadData(sessionKey, bSilent)
     end
     data = struct;
     data.sessionKey = sessionKey;
+    data.dataFile = dataFile;
     fileData = load(dataFile);
     data = addFromFile(data,fileData);
 end

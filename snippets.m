@@ -9,6 +9,9 @@ data = loadData('s10a');
 rasterPlot(data)
 
 %%
+firstHours(loadData('s10a'));
+
+%%
 figure; plot(firingRates(data.unitSpikeTimes{1}));
 
 %%
