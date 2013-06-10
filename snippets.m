@@ -39,5 +39,13 @@ mUnitPlot(data, fCV, 'CV time course for all units')
 %%
 unitTimeDist(calcISIs(data.unitSpikeTimes{1}))
 
+%% 
+isiDkl(data,1)
+
+for iUnit=1:data.nUnits
+    isiDkl(data,iUnit)
+    pause
+end
+
 %% Working with Eli Nelken's code
 uM = toNelkenStyle(loadData('s10a'));

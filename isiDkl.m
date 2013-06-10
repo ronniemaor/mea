@@ -11,13 +11,22 @@ function isiDkl(data,iUnit)
         edges(i) = prctile(baseISIs, i*100/N);
     end  
     
-    fDkl = @(x) calcDkl(x,edges,N);
-    stats = cellfun(fDkl, ISIs);
-    plot(stats)
+    statsDkl = cellfun(@(x) calcDkl(x,edges,N), ISIs);
+    statsRate = cellfun(@(x) 1/mean(x), ISIs);
+    
+    subplot(2,1,1)
+    plot(statsDkl)
     title(sprintf('D_{KL} of ISI(t) relative to baseline hours - %s, unit %d',data.sessionKey,iUnit))
     xlabel('Hour number')
-    set(gca,'XTick',1:length(stats))
+    set(gca,'XTick',1:length(statsDkl))
     ylabel('D_{KL}')
+    
+    subplot(2,1,2)
+    plot(statsRate)
+    title(sprintf('Mean firing rate - %s, unit %d',data.sessionKey,iUnit))
+    xlabel('Hour number')
+    set(gca,'XTick',1:length(statsDkl))
+    ylabel('rate [Hz]')
 end
 
 function Dkl = calcDkl(ISIs,edges,N)
