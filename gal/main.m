@@ -16,6 +16,8 @@ time_of_bac = 60*20*3
 window = [1, time_of_bac]
 % plot_raster(trains)
 
+
+
 for i_unit=1:num_units
 
   times = trains{i_unit};
