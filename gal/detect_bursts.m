@@ -1,19 +1,18 @@
-function [burst_times, pvalues] = detect_bursts(train, parms)
+function [burst_times, pvalues] = detect_bursts(trains, parms)
 %
 
   % train is expected to have spike times in seconds
 
-  interval_for_collecting_sec = take_from_struct(parms, 'interval_for_collecting_sec', 60*5);
-  interval_for_estimating_sec = take_from_struct(parms, 'interval_for_estimating_sec', 1);
+  collect_bin_sec = take_from_struct(parms, 'collect_bin_sec', 60*5);
+  estimate_bin_sec = take_from_struct(parms, 'estimate_bin_sec', 1);
 
 
-  % compute a vector of spike counts at 'interval..' resolution
-  times = sort(cell2mat(train'));
-  times = interval_for_estimating_sec*ceil(times/interval_for_estimating_sec);
+  % compute a vector of spike counts at 'bin..' resolution
+  times = sort(cell2mat(trains'));
+  times = estimate_bin_sec*ceil(times/estimate_bin_sec);
   rate = sparse(times, ones(size(times)), ones(size(times)));
   
-  num_bins_in_epoch = interval_for_collecting_sec / ...
-      interval_for_estimating_sec;
+  num_bins_in_epoch = collect_bin_sec / estimate_bin_sec;
   num_epochs = length(rate) / num_bins_in_epoch;
 
   bins = [0:1:500];
@@ -28,7 +27,7 @@ function [burst_times, pvalues] = detect_bursts(train, parms)
 
     % Compmute burst-pvalue
     pvalues{i_epoch} = 1-cdf(rate(p_beg:p_end)+1);
-    burst_times{i_epoch} = p_beg+find(pvalues<0.01);
+    burst_times{i_epoch} = p_beg+find(pvalues{i_epoch}<0.01);
   end
 
 end
