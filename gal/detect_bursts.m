@@ -4,11 +4,11 @@ function [burst_times, pvalues] = detect_bursts(train, parms)
   % train is expected to have spike times in seconds
 
   interval_for_collecting_sec = take_from_struct(parms, 'interval_for_collecting_sec', 60*5);
-  interval_for_estimating_sec = take_from_struct(parms, 'interval_for_collecting_sec', 1);
+  interval_for_estimating_sec = take_from_struct(parms, 'interval_for_estimating_sec', 1);
 
 
   % compute a vector of spike counts at 'interval..' resolution
-  times = sort(cell2mat(trains'));
+  times = sort(cell2mat(train'));
   times = interval_for_estimating_sec*ceil(times/interval_for_estimating_sec);
   rate = sparse(times, ones(size(times)), ones(size(times)));
   
