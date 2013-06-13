@@ -12,7 +12,8 @@ mode = 'bursts';
 
 switch mode
  case 'bursts'
-  [burst_times, pvalues] = detect_bursts(trains, parms);
+  burst_mode = 'gamma';
+  [burst_times, pvalues] = detect_bursts(burst_mode, trains, parms);
  case 'isi', 
   plot_isis;
  case 'rate', 
