@@ -18,8 +18,9 @@ end
 % =======================================================================
 function [burst_times, pvalues] = detect_bursts_gamma(burst_mode, trains, parms)
   % train is expected to have spike times in seconds
-  collect_bin_sec = take_from_struct(parms, 'collect_bin_sec', 60*5);
+  collect_bin_sec = take_from_struct(parms, 'collect_bin_sec', 60*20);
   estimate_bin_sec = take_from_struct(parms, 'estimate_bin_sec', 1);
+  significance_threshold = take_from_struct(parms, 'significance_threshold');
 
   % compute a vector of spike counts at 'bin..' resolution
   times = sort(cell2mat(trains'));
@@ -45,7 +46,7 @@ function [burst_times, pvalues] = detect_bursts_gamma(burst_mode, trains, parms)
     
     % Compmute burst-pvalue
     allpvalues = 1-gamcdf(rates,theta_hat(1), theta_hat(2));
-    inds = find(allpvalues<0.01);
+    inds = find(allpvalues < significance_threshold);
     burst_times{i_epoch} = p_beg + inds - 1;
     pvalues{i_epoch} = allpvalues(inds);
   end
