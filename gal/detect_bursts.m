@@ -5,10 +5,12 @@ function [burst_times, pvalues] = detect_bursts(burst_mode, trains, parms)
 
   
   switch burst_mode
-   case 'gamma', 
-    [burst_times, pvalues] = detect_bursts_gamma(burst_mode, trains, parms);
+   case 'gamma_per_bin', 
+    [burst_times, pvalues] = detect_bursts_gamma(trains, parms, 'per_bin');
+   case 'gamma_on_base', 
+    [burst_times, pvalues] = detect_bursts_gamma(trains, parms, 'on_base');
    case 'marom', 
-    [burst_times, pvalues] = detect_bursts_marom(burst_mode, trains, parms);
+    [burst_times, pvalues] = detect_bursts_marom(trains, parms);
    otherwise , error('invalid burst mode = %s', burst_mode);
   end
   
@@ -16,7 +18,7 @@ end
   
 
 % =======================================================================
-function [burst_times, pvalues] = detect_bursts_gamma(burst_mode, trains, parms)
+function [burst_times, pvalues] = detect_bursts_gamma(trains, parms, base_mode)
   % train is expected to have spike times in seconds
   collect_bin_sec = take_from_struct(parms, 'collect_bin_sec', 60*20);
   estimate_bin_sec = take_from_struct(parms, 'estimate_bin_sec', 1);
@@ -30,7 +32,6 @@ function [burst_times, pvalues] = detect_bursts_gamma(burst_mode, trains, parms)
   num_bins_in_epoch = collect_bin_sec / estimate_bin_sec;
   num_epochs = length(rate) / num_bins_in_epoch;
 
-  bins = [0:1:500];
   pvalues = cell(num_epochs, 1);
   burst_times = cell(num_epochs, 1);
   for i_epoch = 1:num_epochs
@@ -38,11 +39,21 @@ function [burst_times, pvalues] = detect_bursts_gamma(burst_mode, trains, parms)
     p_beg = (i_epoch-1)*num_bins_in_epoch + 1;
     p_end = i_epoch*num_bins_in_epoch;
     rates = full(rate(p_beg:p_end));
+    all_rates{i_epoch} = rates;
     % pdf = hist(rate(p_beg:p_end), bins);
     % cdf = cumsum(pdf) / sum(pdf);
 
     % Fit a Gamma model to the pdf 
-    theta_hat = gamfit(rates);
+    switch base_mode
+     case 'per_bin'
+      theta_hat = gamfit(rates);
+     case 'on_base'
+      if i_epoch < 4
+	base_rates = cell2mat(all_rates');
+	theta_hat = gamfit(base_rates);
+      end
+    end
+    
     
     % Compmute burst-pvalue
     allpvalues = 1-gamcdf(rates,theta_hat(1), theta_hat(2));

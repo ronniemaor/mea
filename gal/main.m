@@ -14,7 +14,7 @@ cm = jet(num_sessions);
 for i_session = 1:num_sessions;
 
   % Load data
-  data = loadData(session_names{i_session})
+  data = loadData(session_names{i_session});
   trains = data.unitSpikeTimes;
   % [trains, filename] = load_data(1);
   num_units = length(trains);
@@ -22,7 +22,7 @@ for i_session = 1:num_sessions;
     
   switch mode
    case 'bursts'
-    burst_mode = 'gamma';
+    burst_mode = 'gamma_on_base';
     [burst_times, pvalues] = detect_bursts(burst_mode, trains, parms);
     window_length = 60*20; 
     isis = calc_isis(burst_times, window_length);

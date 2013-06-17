@@ -3,7 +3,6 @@ function [trains, filename] = load_data(datatype)
 % Load data
 % 
 
-
   switch datatype
     case 1, 
      dirname = fullfile('/', 'cortex', 'data', 'MEA', 'Slutsky2013', '10um bac');
@@ -20,7 +19,8 @@ function [trains, filename] = load_data(datatype)
    otherwise, error('invalid session');
   end
 
-  fullname = fullfile(dirname, filename)
+  fullname = fullfile(dirname, filename);
+  fprintf('Load from %s\n', fullname);
   data = load(fullname);
   
   % transform into spike matrix 
