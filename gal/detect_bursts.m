@@ -27,8 +27,8 @@ function [burst_times, pvalues] = detect_bursts_gamma(burst_mode, trains, parms)
   times = estimate_bin_sec*ceil(times/estimate_bin_sec);
   rate = sparse(times, ones(size(times)), ones(size(times)));
   
-  num_bins_in_epoch = collect_bin_sec / estimate_bin_sec;
-  num_epochs = length(rate) / num_bins_in_epoch;
+  num_bins_in_epoch = floor(collect_bin_sec / estimate_bin_sec);
+  num_epochs = floor(length(rate) / num_bins_in_epoch);
 
   bins = [0:1:500];
   pvalues = cell(num_epochs, 1);
