@@ -7,6 +7,10 @@
     return
   end
   fprintf('Start initialization: begin init.m\n');
+
+  addpath('..');
+
+
   % General control variables
   parms.dummy=0;
   [do_force, parms] = take_from_struct(parms, 'do_force',     0);
