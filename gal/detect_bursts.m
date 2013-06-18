@@ -50,6 +50,7 @@ function [burst_times, pvalues] = detect_bursts_gamma(trains, parms, base_mode)
      case 'on_base'
       if i_epoch < 4
 	base_rates = cell2mat(all_rates');
+    warning('off', 'stats:gamfit:ZerosInData')
 	theta_hat = gamfit(base_rates);
       end
     end
