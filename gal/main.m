@@ -24,7 +24,7 @@ for i_session = 1:num_sessions;
     window_length = 60*20; 
     isis = calc_isis(burst_times, window_length);
     num_bins = 10;
-    [Dkl, rate] = track_dist_changes(isis, num_bins);
+    [Dkl, rate] = track_dist_changes(isis, data.nBaselineHours, num_bins);
     
     xxx = 1:length(isis);
     figure(1); hold on ;  title('Dkl');

@@ -1,14 +1,14 @@
-function [Dkl, rate] = track_dist_changes(isis_array, num_bins);  
-  baseline_isis = cell2mat(isis_array(1:3)');
+function [Dkl, rate] = track_dist_changes(isis_array, nBaselineHours, num_bins)
+  baseline_isis = cell2mat(isis_array(1:nBaselineHours)');
   baseline_rate = 1/mean(baseline_isis);  
 
   % Find edges that make isis{1] uniform
-  edges = prctile(baseline_isis, [1:num_bins-1]*100/num_bins);
+  edges = prctile(baseline_isis, (1:num_bins-1)*100/num_bins);
   edges = unique(round(edges))+0.5;
 
-  % compute Dkl wrt to isis 1
+  % compute Dkl wrt to baseline_isis
   base_pdf = get_distribution(baseline_isis, edges);
-  if any(base_pdf<eps), error; end
+  if any(base_pdf<eps), error('Baseline distribution should not contain zeros'); end
 
   for i=1:length(isis_array)
     isis = isis_array{i};
@@ -23,7 +23,7 @@ end
 function Dkl = calc_Dkl(isis, edges, base_pdf)
 % The Dkl with a uniform distribution is 
 % sum plogp - sum p log(1/N) = -H + log2(N)
-  if isempty(isis), Dkl = NaN; return;end;
+  if isempty(isis), Dkl = NaN; return; end;
 
   pdf = get_distribution(isis, edges);
   inds = pdf > eps;
