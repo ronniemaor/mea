@@ -15,15 +15,12 @@ for i_session = 1:num_sessions;
 
   % Load data
   data = loadData(session_names{i_session});
-  trains = data.unitSpikeTimes;
-  % [trains, filename] = load_data(1);
-  num_units = length(trains);
   time_of_bac = 60*20*3;
     
   switch mode
    case 'bursts'
     burst_mode = 'gamma_on_base';
-    [burst_times, pvalues] = detect_bursts(burst_mode, trains, parms);
+    [burst_times, pvalues] = detect_bursts(burst_mode, data.unitSpikeTimes, parms);
     window_length = 60*20; 
     isis = calc_isis(burst_times, window_length);
     num_bins = 10;
@@ -39,12 +36,12 @@ for i_session = 1:num_sessions;
     % legend(hs, session_names);
     drawnow;
     
-   case 'isi', 
-    plot_isis;
-   case 'rate', 
+   case 'isi' 
+    plot_isis(data);
+   case 'rate'
     plot_rate_vs_time;
    otherwise
-    error('invvalid mode = %s\n', mode);
+    error('invalid mode = %s\n', mode);
   end
 
 end
