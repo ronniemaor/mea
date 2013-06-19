@@ -1,5 +1,7 @@
-function netRate = networkRates(data)
-    maxHour = 35; % this is max hour that appears in all sessions
+function netRate = networkRates(data,maxHour)
+    if nargin < 2
+        maxHour = data.networkFullHours;
+    end
     allRates = zeros(maxHour,data.nUnits);
     for iUnit = 1:data.nUnits
         unitRate = firingRates(data.unitSpikeTimes{iUnit});
