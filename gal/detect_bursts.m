@@ -2,7 +2,6 @@ function [burst_times, pvalues] = detect_bursts(data, burst_mode, parms)
 %
 % Detect time of bursts for each cell.
 %
-
   
   switch burst_mode
    case 'gamma_per_bin', 
@@ -10,7 +9,8 @@ function [burst_times, pvalues] = detect_bursts(data, burst_mode, parms)
    case 'gamma_on_base', 
     [burst_times, pvalues] = detect_bursts_gamma(data, parms, 'on_base');
    case 'fraction_active', 
-    [burst_times, pvalues] = detect_bursts_fraction_active(data, parms);
+    pvalues = NaN;
+    burst_times = detect_bursts_fraction_active(data, parms);
    otherwise , error('invalid burst mode = %s', burst_mode);
   end
   
@@ -20,17 +20,23 @@ end
 % =======================================================================
 function [burst_times, pvalues] = detect_bursts_gamma(data, parms, base_mode)
   % train is expected to have spike times in seconds
-  collect_bin_sec = 60*20; % TODO: scale nBaselineHours to allow different sized epochs. # take_from_struct(parms, 'collect_bin_sec', 60*20);
+  collect_bin_sec = take_from_struct(parms, 'collect_bin_sec', 60*20);
+  % TODO(ronnie): scale nBaselineHours to allow different sized
+  % epochs. 
+
   estimate_bin_sec = take_from_struct(parms, 'estimate_bin_sec', 1);
   significance_threshold = take_from_struct(parms, 'significance_threshold');
 
   % compute a vector of spike counts at 'bin..' resolution
   times = sort(cell2mat(data.unitSpikeTimes'));
   bins = ceil(times/estimate_bin_sec);
-  rate = sparse(bins, ones(size(bins)), ones(size(bins))); % total spikes (over units) for each bin
+  rate = sparse(bins, ones(size(bins)), ones(size(bins)));
   
   num_bins_in_epoch = floor(collect_bin_sec / estimate_bin_sec);
-  if num_bins_in_epoch - floor(num_bins_in_epoch) > eps; error('num_bins_in_epoch must be a whole number'); end; % otherwise our epoch placement below will drift
+  if num_bins_in_epoch - floor(num_bins_in_epoch) > eps; 
+    error('num_bins_in_epoch must be a whole number'); 
+  end % otherwise our epoch placement below will drift
+
   num_bins_in_epoch = floor(num_bins_in_epoch);
   num_epochs = floor(length(rate) / num_bins_in_epoch);
 
@@ -42,8 +48,6 @@ function [burst_times, pvalues] = detect_bursts_gamma(data, parms, base_mode)
     p_beg = (i_epoch-1)*num_bins_in_epoch + 1;
     p_end = i_epoch*num_bins_in_epoch;
     rates = full(rate(p_beg:p_end));
-    % pdf = hist(rate(p_beg:p_end), bins);
-    % cdf = cumsum(pdf) / sum(pdf);
 
     % Fit a Gamma model to the pdf 
     switch base_mode
@@ -70,8 +74,7 @@ function [burst_times, pvalues] = detect_bursts_gamma(data, parms, base_mode)
 end
 
 % =======================================================================
-function [burst_times, pvalues] = detect_bursts_fraction_active(data, parms)
-  pvalues = NaN; % not computing pvalues
+function burst_times = detect_bursts_fraction_active(data, parms)
 
   % train is expected to have spike times in seconds
   estimate_bin_sec = take_from_struct(parms, 'estimate_bin_sec', 1);
