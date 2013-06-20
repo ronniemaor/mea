@@ -9,7 +9,7 @@ data = loadData('s10a');
 rasterPlot(data)
 
 %%
-rasterWithBursts(data,make_parms('burst_mode', 'gamma_per_bin', 'significance_threshold', 0.1, 'estimate_bin_sec', 1, 'xrange', [4820 4920]));
+rasterWithBursts(data,make_parms('burst_mode', 'gamma_per_bin', 'significance_threshold', 0.1, 'estimate_bin_sec', 1));
 
 %%
 firstHours(loadData('s10a'));

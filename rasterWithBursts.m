@@ -1,10 +1,22 @@
 function rasterWithBursts(data, parms)
     data = sortUnitsByRate(data);
+    nBase = data.nBaselineHours;
 
     burst_times = detect_bursts(parms.burst_mode, data.unitSpikeTimes, data.nBaselineHours, parms);
     
+    plotTimes = [nBase nBase+1, nBase+4, 30];
+    nPlots = length(plotTimes);
+    
     figure;
-    title(getTitle(data,parms))
+    for iPlot=1:nPlots
+        subplot(nPlots,1,iPlot)
+        plotOneSection(data, burst_times, plotTimes(iPlot));
+    end
+    topLevelTitle(getTitle(data,parms))
+end
+
+function plotOneSection(data, burst_times, hourNum)
+    title(sprintf('Hour number %d',hourNum))
     hold on;
     for iUnit = 1:data.nUnits
       times = data.unitSpikeTimes{iUnit};  
@@ -13,9 +25,9 @@ function rasterWithBursts(data, parms)
     plot(burst_times, zeros(size(burst_times)), 'rx', 'MarkerSize', 12, 'LineWidth', 3);
     xlabel('time [s]')
     
-    if isfield(parms,'xrange')
-        xlim(parms.xrange)
-    end    
+    startTime = hourNum * 20 * 60;
+    xrange = 100;
+    xlim([startTime startTime + xrange])
 end
 
 function ttl = getTitle(data,parms)
@@ -26,6 +38,6 @@ function ttl = getTitle(data,parms)
         100*parms.significance_threshold, ...
         parms.estimate_bin_sec ...
     );
-    ttl = sprintf('%s\n%s', strHeading, strBurstParams);
+    ttl = sprintf('%s - %s', strHeading, strBurstParams);
     ttl = strrep(ttl, '_', '\_');
 end
