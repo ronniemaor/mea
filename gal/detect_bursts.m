@@ -1,4 +1,4 @@
-function [burst_times, pvalues] = detect_bursts(burst_mode, trains, nBaselineHours, parms)
+function [burst_times, pvalues] = detect_bursts(data, burst_mode, parms)
 %
 % Detect time of bursts for each cell.
 %
@@ -6,11 +6,11 @@ function [burst_times, pvalues] = detect_bursts(burst_mode, trains, nBaselineHou
   
   switch burst_mode
    case 'gamma_per_bin', 
-    [burst_times, pvalues] = detect_bursts_gamma(trains, nBaselineHours, parms, 'per_bin');
+    [burst_times, pvalues] = detect_bursts_gamma(data, parms, 'per_bin');
    case 'gamma_on_base', 
-    [burst_times, pvalues] = detect_bursts_gamma(trains, nBaselineHours, parms, 'on_base');
-   case 'marom', 
-    [burst_times, pvalues] = detect_bursts_marom(trains, nBaselineHours, parms);
+    [burst_times, pvalues] = detect_bursts_gamma(data, parms, 'on_base');
+   case 'fraction_active', 
+    [burst_times, pvalues] = detect_bursts_fraction_active(data, parms);
    otherwise , error('invalid burst mode = %s', burst_mode);
   end
   
@@ -18,14 +18,14 @@ end
   
 
 % =======================================================================
-function [burst_times, pvalues] = detect_bursts_gamma(trains, nBaselineHours, parms, base_mode)
+function [burst_times, pvalues] = detect_bursts_gamma(data, parms, base_mode)
   % train is expected to have spike times in seconds
   collect_bin_sec = 60*20; % TODO: scale nBaselineHours to allow different sized epochs. # take_from_struct(parms, 'collect_bin_sec', 60*20);
   estimate_bin_sec = take_from_struct(parms, 'estimate_bin_sec', 1);
   significance_threshold = take_from_struct(parms, 'significance_threshold');
 
   % compute a vector of spike counts at 'bin..' resolution
-  times = sort(cell2mat(trains'));
+  times = sort(cell2mat(data.unitSpikeTimes'));
   bins = ceil(times/estimate_bin_sec);
   rate = sparse(bins, ones(size(bins)), ones(size(bins))); % total spikes (over units) for each bin
   
@@ -36,7 +36,7 @@ function [burst_times, pvalues] = detect_bursts_gamma(trains, nBaselineHours, pa
 
   pvalues = cell(num_epochs, 1);
   burst_times = cell(num_epochs, 1);
-  base_rates = full(rate(1:nBaselineHours*num_bins_in_epoch));
+  base_rates = full(rate(1:data.nBaselineHours*num_bins_in_epoch));
   for i_epoch = 1:num_epochs
     % Estimate the distribution
     p_beg = (i_epoch-1)*num_bins_in_epoch + 1;
@@ -67,4 +67,25 @@ function [burst_times, pvalues] = detect_bursts_gamma(trains, nBaselineHours, pa
   % flatten the output
   burst_times = cell2mat(burst_times);
   pvalues = cell2mat(pvalues);
+end
+
+% =======================================================================
+function [burst_times, pvalues] = detect_bursts_fraction_active(data, parms)
+  pvalues = NaN; % not computing pvalues
+
+  % train is expected to have spike times in seconds
+  estimate_bin_sec = take_from_struct(parms, 'estimate_bin_sec', 1);
+  threshold = take_from_struct(parms, 'fraction');
+
+  % compute a vector of spike counts at 'bin..' resolution
+  nBins = floor(20*60 * data.networkFullHours / estimate_bin_sec);
+  unitActiveBins = zeros(data.nUnits,nBins);
+  for iUnit = 1:data.nUnits
+      unitTimes = data.unitSpikeTimes{iUnit};
+      bins = unique(ceil(unitTimes/estimate_bin_sec));
+      unitActiveBins(iUnit,bins) = 1;
+  end
+  fractionActive = sum(unitActiveBins) / data.nUnits;
+  burst_times = estimate_bin_sec * find(fractionActive > threshold);
+  burst_times = burst_times';
 end
