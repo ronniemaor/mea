@@ -25,7 +25,7 @@ function plotOneSection(data, burst_times, hourNum)
     plot(burst_times, zeros(size(burst_times)), 'rx', 'MarkerSize', 12, 'LineWidth', 3);
     xlabel('time [s]')
     
-    startTime = hourNum * 20 * 60;
+    startTime = (hourNum-1) * 20 * 60;
     xrange = 100;
     xlim([startTime startTime + xrange])
 end
