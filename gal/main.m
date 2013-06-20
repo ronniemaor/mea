@@ -20,7 +20,7 @@ for i_session = 1:num_sessions;
   switch mode
    case 'bursts'
     burst_mode = 'gamma_on_base';
-    [burst_times, pvalues] = detect_bursts(burst_mode, data.unitSpikeTimes, parms);
+    [burst_times, pvalues] = detect_bursts(burst_mode, data.unitSpikeTimes, data.nBaselineHours, parms);
     window_length = 60*20; 
     isis = calc_isis(burst_times, window_length);
     num_bins = 10;
