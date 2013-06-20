@@ -3,6 +3,7 @@ function rasterWithBursts(data, parms)
     nBase = data.nBaselineHours;
 
     burst_times = detect_bursts(data, parms.burst_mode, parms);
+    [num_active,bin_times] = num_units_active(data, parms); % num units active each second
     
     plotTimes = [nBase nBase+1, nBase+4, 30];
     nPlots = length(plotTimes);
@@ -10,18 +11,19 @@ function rasterWithBursts(data, parms)
     figure;
     for iPlot=1:nPlots
         subplot(nPlots,1,iPlot)
-        plotOneSection(data, burst_times, plotTimes(iPlot));
+        plotOneSection(data, burst_times, plotTimes(iPlot), num_active, bin_times);
     end
     topLevelTitle(getTitle(data,parms))
 end
 
-function plotOneSection(data, burst_times, hourNum)
+function plotOneSection(data, burst_times, hourNum, num_active, bin_times)
     title(sprintf('Hour number %d',hourNum))
     hold on;
     for iUnit = 1:data.nUnits
       times = data.unitSpikeTimes{iUnit};  
       plot(times, iUnit*ones(size(times)), '.')
     end
+    plot(bin_times, num_active, 'r-', 'LineWidth', 2);
     plot(burst_times, zeros(size(burst_times)), 'rx', 'MarkerSize', 12, 'LineWidth', 3);
     xlabel('time [s]')
     
