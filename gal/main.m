@@ -28,12 +28,12 @@ for i_session = 1:num_sessions;
     
     xxx = 1:length(isis);
     figure(1); hold on ;  title('Dkl');
-    hs(i_session) = plot(xxx, smooth(Dkl), 'Color', cm(i_session,:), 'linewidth', 3);
-    % hl = legend(hs(i_session), session_names{i_session});
+    plot(xxx, smooth(Dkl), 'Color', cm(i_session,:), 'linewidth', 3);
+    legend(session_names(1:i_session));
     figure(2); hold on ; title('burst rate');
     plot(xxx, smooth(rate), 'Color', cm(i_session,:), 'linewidth', 3);
     axis([0 50 0 0.06]);
-    % legend(hs, session_names);
+    legend(session_names(1:i_session));
     drawnow;
     
    case 'isi' 

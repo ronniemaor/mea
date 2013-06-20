@@ -10,9 +10,9 @@ function sessionConfigs = getAllSessionConfigs()
     sessionConfigs.s10c = newConfig('10uM-bac/4.12.12_filtered.mat',3);
     sessionConfigs.s10d = newConfig('10uM-bac/9.10.12_filtered.mat',3);
     
-    sessionConfigs.s40a = newConfig('40uM-CNQX/10.2.13_final-filtered.mat',4);
-    sessionConfigs.s40b = newConfig('40uM-CNQX/27.1.13.mat',3);
-    sessionConfigs.s40c = newConfig('40uM-CNQX/27.3.13_final.mat',4);
+%     sessionConfigs.s40a = newConfig('40uM-CNQX/10.2.13_final-filtered.mat',4);
+%     sessionConfigs.s40b = newConfig('40uM-CNQX/27.1.13.mat',3);
+%     sessionConfigs.s40c = newConfig('40uM-CNQX/27.3.13_final.mat',4);
 end
 
 function config = newConfig(filePath, nBaselineHours)
