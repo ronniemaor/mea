@@ -18,6 +18,9 @@ firstHours(loadData('s10a'));
 %%
 figure; plot(firingRates(data.unitSpikeTimes{1}));
 
+%% whole network firing rate per hour
+figure; plot(firingRates(cell2mat(data.unitSpikeTimes')));
+
 %%
 ISIs = calcISIs(data.unitSpikeTimes{1});
 
