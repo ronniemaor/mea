@@ -5,6 +5,6 @@ function setupPath()
     path(path,[codeDir '/3rd party']);
     path(path,[codeDir '/util']);
     path(path,[codeDir '/figures']);
-    path(path,[codeDir '/gal']);
+    path(path,[codeDir '/gal_copy_for_ronnie']);
     path(path,[codeDir '/eli nelken']);
 end
