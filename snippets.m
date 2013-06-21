@@ -10,7 +10,10 @@ rasterPlot(data)
 
 %%
 rasterWithBursts(data,make_parms('burst_mode', 'gamma_per_bin', 'significance_threshold', 0.1, 'estimate_bin_sec', 1));
-rasterWithBursts(data,make_parms('burst_mode', 'fraction_active', 'fraction', 0.5, 'estimate_bin_sec', 1));
+rasterWithBursts(data,make_parms('burst_mode', 'fraction_active', 'fraction', 0.5, 'estimate_bin_sec', 0.5));
+
+%% std(fraction of units active) over time
+numActiveStd(make_parms('filter', 's10'))
 
 %%
 firstHours(loadData('s10a'));
