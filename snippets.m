@@ -14,6 +14,7 @@ rasterWithBursts(data,make_parms('burst_mode', 'fraction_active', 'fraction', 0.
 
 %% std(fraction of units active) over time
 numActiveStd(make_parms('filter', 's10'))
+numActiveDist(loadData('s1c'), make_parms('estimate_bin_sec', 1, 'hist_bin', 0.1))
 
 %%
 firstHours(loadData('s10a'));
