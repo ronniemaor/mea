@@ -26,9 +26,3 @@ function unitContributions(data)
         ylim([0 0.25])
     end
 end
-
-function pdf = getDistribution(x,edges)
-    n = histc(x, [-Inf edges Inf]);
-    n = n(1:end-1); % remove count of elements that "match Inf"
-    pdf = n / sum(n);
-end

@@ -36,9 +36,3 @@ function Dkl = calcDkl(ISIs,edges,N)
     Dkl = log2(N) - H;
 end
 
-function pdf = getDistribution(ISIs,edges)
-    n = histc(ISIs, [-Inf edges Inf]);
-    n = n(1:end-1); % remove count of elements that "match Inf"
-    pdf = n / sum(n);
-end
-
