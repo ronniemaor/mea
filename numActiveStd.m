@@ -27,13 +27,13 @@ function numActiveStd(parms)
         [pActive,tBin] = activePerHour(data, parms);
         stats = cellfun(f,pActive);
             
-        subplot(1,2,1); hold on ; title('Firing rates (all units together)');
+        subplot(1,2,1); set(gca, 'FontSize', 16); hold on ; title('Firing rates (all units together)');
         plot(rates, 'Color', cm(iSession,:), 'linewidth', 3);
         xlabel('Hour number')
         ylabel('Firing rate [Hz]')
         legend(sessionNames(1:iSession));
 
-        subplot(1,2,2); hold on ;  title(sprintf('\\sigma(pActive) binSize=%.1f sec',tBin));
+        subplot(1,2,2); set(gca, 'FontSize', 16); hold on ;  title(sprintf('\\sigma(pActive) binSize=%.1f sec',tBin));
         plot(stats, 'Color', cm(iSession,:), 'linewidth', 3);
         xlabel('Hour number')
         ylabel('\sigma(pActive)')
