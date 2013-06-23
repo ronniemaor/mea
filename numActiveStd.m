@@ -17,13 +17,13 @@ function numActiveStd(parms)
         rates = firingRates(cell2mat(data.unitSpikeTimes'));
         rates = rates(1:data.maxUnitFullHours) ./ data.nUnits;
         baseRate = mean(rates(1:data.nBaselineHours));
-        [pActivePerHour,~,tBaseBin] = activePerHourWithNormalization(data, parms);
-        stats = cellfun(@(x) std(x),pActivePerHour);
+        [pActive,~,tBaseBin] = activePerHour(data, parms);
+        stats = cellfun(@(x) std(x),pActive);
         baseStat = mean(stats(1:data.nBaselineHours));
         pVals = zeros(1,length(stats));
-        baseActivity = cell2mat(pActivePerHour(1:data.nBaselineHours));
+        baseActivity = cell2mat(pActive(1:data.nBaselineHours));
         for iHour=1:length(stats)
-            [~,p] = vartest2(baseActivity,pActivePerHour{iHour});
+            [~,p] = vartest2(baseActivity,pActive{iHour});
             pVals(iHour) = p;
         end
         

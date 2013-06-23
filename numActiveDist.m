@@ -8,14 +8,14 @@ function numActiveDist(data,parms)
         frames = 1:nHours;
     end
     
-    [pActivePerHour,~,tBaseBin] = activePerHourWithNormalization(data, parms);
+    [pActive,~,tBaseBin] = activePerHour(data, parms);
     rates = firingRates(cell2mat(data.unitSpikeTimes'));
     rates = rates(1:nHours);
 
     binJumps = take_from_struct(parms,'hist_bin',0.1);
     edges = 0:binJumps:1;
     f = @(x) getDistribution(x,edges(2:end));
-    pdfs = cellfun(f,pActivePerHour,'UniformOutput',0);
+    pdfs = cellfun(f,pActive,'UniformOutput',0);
     maxP = max(cell2mat(pdfs));
     
     figure;

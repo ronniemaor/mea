@@ -2,7 +2,7 @@ function numActivePlots(data, parms)
     if nargin<2; parms = make_parms(); end
     nBase = data.nBaselineHours;
 
-    [pActive,tBin] = activePerHour(data, parms);
+    [pActive,~,tBaseBin] = activePerHour(data, parms);
     
     plotTimes = [nBase nBase+1, nBase+4, 46];
     nPlots = length(plotTimes);
@@ -11,9 +11,9 @@ function numActivePlots(data, parms)
     for iPlot=1:nPlots
         subplot(nPlots,1,iPlot)
         hourNum = plotTimes(iPlot);
-        plotOneSection(pActive{hourNum}, tBin, hourNum);
+        plotOneSection(pActive{hourNum}, tBaseBin, hourNum);
     end
-    topLevelTitle(getTitle(data,tBin))
+    topLevelTitle(getTitle(data,tBaseBin))
 end
 
 function plotOneSection(pActive, tBin, hourNum)
@@ -27,9 +27,9 @@ function plotOneSection(pActive, tBin, hourNum)
     ylabel('fraction active')
 end
 
-function ttl = getTitle(data,tBin)
+function ttl = getTitle(data,tBaseBin)
     strHeading = sprintf('Number of active units for %s',data.sessionKey);
-    strParams = sprintf('bin=%.1f sec', tBin);
+    strParams = sprintf('bin=%.1f sec', tBaseBin);
     ttl = sprintf('%s - %s', strHeading, strParams);
     ttl = strrep(ttl, '_', '\_');
 end
