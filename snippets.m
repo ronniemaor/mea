@@ -14,7 +14,8 @@ rasterWithBursts(data,make_parms('burst_mode', 'fraction_active', 'fraction', 0.
 
 %% std(fraction of units active) over time
 numActiveStd(make_parms('filter', 's1', 'normalize', 1))
-numActiveDist(loadData('s1c'), make_parms('estimate_bin_sec', 1, 'hist_bin', 0.1))
+numActiveStdMultipleBinSizes(make_parms('filter', 's1'))
+numActiveDist(loadData('s1c'), make_parms('frames', [2 4 10 20 25 30 35 40 45])) % also: estimate_bin_sec, hist_bin
 
 %% std(rates)
 rateStd(make_parms('estimate_bin_sec', 1, 'filter', 's1'))
