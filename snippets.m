@@ -16,7 +16,7 @@ rasterWithBursts(data,make_parms('burst_mode', 'fraction_active', 'fraction', 0.
 numActivePlots(loadData('s1c'))
 numActiveStd(make_parms('filter', 's1', 'normalize', 1))
 numActiveStdMultipleBinSizes(make_parms('filter', 's1', 'bin_sizes', [0.1 1 10]))
-numActiveDist(loadData('s1c'), make_parms('frames', [2 4 10 20 25 30 35 40 45])) % also: estimate_bin_sec, hist_bin
+numActiveDist(loadData('s1c'), make_parms('frames', [2 4 20 35 45], 'hist_bin', 0.04, 'estimate_bin_sec', 1))
 
 %% std(rates)
 rateStd(make_parms('estimate_bin_sec', 1, 'filter', 's1'))

@@ -40,7 +40,10 @@ function numActiveDist(data,parms)
         nPlots = length(frames);
         for iPlot=1:nPlots
             iHour = frames(iPlot);
-            plot(edges,pdfs{iHour}, 'LineWidth', 2); hold all;
+            dclr = (iPlot-1)/(nPlots-1);
+            clr = [dclr 0 1-dclr];
+            plot(edges,pdfs{iHour}, 'LineWidth', 3, 'Color', clr); hold on;
+            axis square
             xlim([0 1])
             ylim([0 maxP])
             title(sprintf('Distributions of active units at different times - %s', data.sessionKey))
