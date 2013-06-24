@@ -2,6 +2,13 @@ function keys = getSessionKeys(parms)
     if ~exist('parms','var'); parms = make_parms(); end
     sessionFilter = take_from_struct(parms,'filter','');
     
+    allConfigs = getAllSessionConfigs();       
+    
+    if isfield(allConfigs, sessionFilter)
+        keys = {sessionFilter};
+        return
+    end
+        
     switch sessionFilter
         case 's1'
             keys = {'s1a', 's1b', 's1c', 's1d'};
@@ -10,7 +17,7 @@ function keys = getSessionKeys(parms)
         case 's40'
             keys  ={'s40a', 's40b', 's40c' };
         otherwise
-            keys = fieldnames(getAllSessionConfigs());
+            keys = fieldnames(allConfigs);
     end    
 
 end
