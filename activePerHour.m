@@ -2,7 +2,7 @@ function [pActive, tBinPerHour, tBaseBin] = activePerHour(data, parms)
     rates = firingRates(cell2mat(data.unitSpikeTimes'));
     baseRate = mean(rates(1:data.nBaselineHours));
 
-    tBaseBin = take_from_struct(parms, 'estimate_bin_sec', 1);
+    tBaseBin = take_from_struct(parms, 'estimate_bin_sec', 0.1);
     bNormalize = take_from_struct(parms, 'normalize', 1);
     
     tHour = 20*60;
