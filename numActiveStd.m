@@ -7,10 +7,10 @@ function numActiveStd(parms)
 
     sessionKeys = getSessionKeys(parms);
     numSessions = length(sessionKeys);
-    cm = jet(numSessions);
+    clrs = set_colors();
     maxHour = 0;
     for iSession = 1:numSessions;
-        data = loadData(sessionKeys{iSession});
+        data = loadData(sessionKeys{iSession},1);
         nHours = data.maxUnitFullHours;
         maxHour = max(maxHour, nHours);
     
@@ -19,7 +19,7 @@ function numActiveStd(parms)
         baseRate = mean(rates(1:data.nBaselineHours));
 
         subplot(1,3,1); set(gca, 'FontSize', 16); hold on ; title('Mean unit firing rate');
-        plot(rates ./ baseRate, 'Color', cm(iSession,:), 'linewidth', 3);
+        plot(rates ./ baseRate, 'Color', clrs{iSession}, 'linewidth', 3);
         xlim([0 maxHour])
         xlabel('Hour number')
         ylabel('Firing rate')
@@ -46,11 +46,15 @@ function numActiveStd(parms)
             ttl = sprintf('\\sigma(num active units)\nbin=%.1f sec\n%s',tBaseBin,strNormalized);
             title(ttl);
             yStat = stats ./ baseStat;
-            plot(yStat, 'Color', cm(iSession,:), 'linewidth', 3);
+            plot(yStat, 'Color', clrs{iSession}, 'linewidth', 3);
             if bShowPvals
                 significant = find(pVals > pSignificant);
                 hSig = plot(significant, yStat(significant), 'x', 'Color', [0 0 0]', 'MarkerSize', 10, 'LineWidth', 2);
                 set(get(get(hSig,'Annotation'),'LegendInformation'),'IconDisplayStyle','off'); % Exclude markers from legend
+                if bNormalize
+                    pValAfterRecovery = pVals(nHours - 2); % sometimes the last hour is not full/accurate, so take 2 back for safety
+                    fprintf('p-value after recovery for %s: %.2g\n', data.sessionKey, pValAfterRecovery)
+                end
             end
             xlim([0 maxHour])
             xlabel('Hour number')
