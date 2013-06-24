@@ -36,7 +36,7 @@ function numActiveStd(parms)
                 pVals(iHour) = p;
             end
 
-            subplot(1,3,3-bNormalize); set(gca, 'FontSize', 16); hold on;  
+            subplot(1,3,2+bNormalize); set(gca, 'FontSize', 16); hold on;  
             if bNormalize
                 strNormalized = 'normalized for rate';
             else
