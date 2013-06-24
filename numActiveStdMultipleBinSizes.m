@@ -13,13 +13,14 @@ function numActiveStdMultipleBinSizes(parms)
     sessionKeys = getSessionKeys(parms);
     numSessions = length(sessionKeys);
     cm = jet(numSessions);
-    for iPlot = 1:nPlots
-        parms.estimate_bin_sec = binSizes(iPlot);
-        maxHour = 0;
-        for iSession = 1:numSessions;
-            data = loadData(sessionKeys{iSession});
-            nHours = data.maxUnitFullHours;
-            maxHour = max(maxHour, nHours);
+    maxHour = 0;
+    for iSession = 1:numSessions;
+        data = loadData(sessionKeys{iSession});
+        nHours = data.maxUnitFullHours;
+        maxHour = max(maxHour, nHours);
+        
+        for iPlot = 1:nPlots
+            parms.estimate_bin_sec = binSizes(iPlot);
 
             [pActive,~,tBaseBin] = activePerHour(data, parms);
             stats = cellfun(@(x) std(x),pActive);
@@ -31,7 +32,7 @@ function numActiveStdMultipleBinSizes(parms)
                 pVals(iHour) = p;
             end
 
-            subplot(nRows,nCols,iPlot); set(gca, 'FontSize', 16); hold on ;  title(sprintf('bin=%.2f sec',tBaseBin));
+            subplot(nRows,nCols,iPlot); set(gca, 'FontSize', 16); hold on ;  title(sprintf('bin=%g sec',tBaseBin));
             yStat = stats ./ baseStat;
             plot(yStat, 'Color', cm(iSession,:), 'linewidth', 3);
             if bShowPvals
