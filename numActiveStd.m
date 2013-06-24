@@ -17,36 +17,55 @@ function numActiveStd(parms)
         rates = firingRates(cell2mat(data.unitSpikeTimes'));
         rates = rates(1:data.maxUnitFullHours) ./ data.nUnits;
         baseRate = mean(rates(1:data.nBaselineHours));
-        [pActive,~,tBaseBin] = activePerHour(data, parms);
-        stats = cellfun(@(x) std(x),pActive);
-        baseStat = mean(stats(1:data.nBaselineHours));
-        pVals = zeros(1,length(stats));
-        baseActivity = cell2mat(pActive(1:data.nBaselineHours));
-        for iHour=1:length(stats)
-            [~,p] = vartest2(baseActivity,pActive{iHour});
-            pVals(iHour) = p;
-        end
-        
-        subplot(1,2,1); set(gca, 'FontSize', 16); hold on ; title('Mean unit firing rate');
+
+        subplot(1,3,1); set(gca, 'FontSize', 16); hold on ; title('Mean unit firing rate');
         plot(rates ./ baseRate, 'Color', cm(iSession,:), 'linewidth', 3);
         xlim([0 maxHour])
         xlabel('Hour number')
-        ylabel('Firing rate [Hz]')
+        ylabel('Firing rate')
         legend(sessionKeys(1:iSession));
 
-        subplot(1,2,2); set(gca, 'FontSize', 16); hold on ;  title(sprintf('\\sigma(pActive) bin=%.1f sec',tBaseBin));
-        yStat = stats ./ baseStat;
-        plot(yStat, 'Color', cm(iSession,:), 'linewidth', 3);
-        if bShowPvals
-            significant = find(pVals > pSignificant);
-            hSig = plot(significant, yStat(significant), 'x', 'Color', [0 0 0]', 'MarkerSize', 10, 'LineWidth', 2);
-            set(get(get(hSig,'Annotation'),'LegendInformation'),'IconDisplayStyle','off'); % Exclude markers from legend
+        for bNormalize = 0:1
+            [pActive,~,tBaseBin] = activePerHour(data, add_parms(parms,'normalize',bNormalize));
+            stats = cellfun(@(x) std(x),pActive);
+            baseStat = mean(stats(1:data.nBaselineHours));
+            pVals = zeros(1,length(stats));
+            baseActivity = cell2mat(pActive(1:data.nBaselineHours));
+            for iHour=1:length(stats)
+                [~,p] = vartest2(baseActivity,pActive{iHour});
+                pVals(iHour) = p;
+            end
+
+            subplot(1,3,3-bNormalize); set(gca, 'FontSize', 16); hold on;  
+            if bNormalize
+                strNormalized = 'normalized for rate';
+            else
+                strNormalized = 'not normalized for rate';
+            end
+            ttl = sprintf('\\sigma(num active units)\nbin=%.1f sec\n%s',tBaseBin,strNormalized);
+            title(ttl);
+            yStat = stats ./ baseStat;
+            plot(yStat, 'Color', cm(iSession,:), 'linewidth', 3);
+            if bShowPvals
+                significant = find(pVals > pSignificant);
+                hSig = plot(significant, yStat(significant), 'x', 'Color', [0 0 0]', 'MarkerSize', 10, 'LineWidth', 2);
+                set(get(get(hSig,'Annotation'),'LegendInformation'),'IconDisplayStyle','off'); % Exclude markers from legend
+            end
+            xlim([0 maxHour])
+            xlabel('Hour number')
+            ylabel('\sigma(num active units)')
+            legend(sessionKeys(1:iSession));
         end
-        xlim([0 maxHour])
-        xlabel('Hour number')
-        ylabel('\sigma(pActive)')
-        legend(sessionKeys(1:iSession));
         
         drawnow;
     end
+    
+    % set both std(pActive) plots to same ylim
+    h2 = subplot(1,3,2);
+    h3 = subplot(1,3,3);
+    y2 = ylim(h2);
+    y3 = ylim(h3);
+    ymax = max(y2(2),y3(2));
+    ylim(h2, [0, ymax]); 
+    ylim(h3, [0, ymax]); 
 end
