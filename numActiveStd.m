@@ -23,7 +23,8 @@ function numActiveStd(parms)
         xlim([0 maxHour])
         xlabel('Hour number')
         ylabel('Firing rate')
-        legend(sessionKeys(1:iSession));
+        legend(sessionKeys(1:iSession), 'Location', 'SouthEast');
+        legend('boxoff')
 
         for bNormalize = 0:1
             [pActive,~,tBaseBin] = activePerHour(data, add_parms(parms,'normalize',bNormalize));
@@ -54,7 +55,6 @@ function numActiveStd(parms)
             xlim([0 maxHour])
             xlabel('Hour number')
             ylabel('\sigma(num active units)')
-            legend(sessionKeys(1:iSession));
         end
         
         drawnow;
