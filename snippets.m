@@ -3,7 +3,7 @@ figNetworkRates()
 figBaseRates()
 
 %%
-data = loadData('s10a');
+data = loadData('bac10a');
 
 %% 
 rasterPlot(data)
@@ -13,16 +13,16 @@ rasterWithBursts(data,make_parms('burst_mode', 'gamma_per_bin', 'significance_th
 rasterWithBursts(data,make_parms('burst_mode', 'fraction_active', 'fraction', 0.5, 'estimate_bin_sec', 0.5));
 
 %% std(fraction of units active) over time
-numActivePlots(loadData('s1c'))
-numActiveStd(make_parms('filter', 's1', 'normalize', 1))
-numActiveStdMultipleBinSizes(make_parms('filter', 's1', 'bin_sizes', [0.1 1 10]))
-numActiveDist(loadData('s1c'), make_parms('frames', [2 4 20 35 45], 'hist_bin', 0.04, 'estimate_bin_sec', 1))
+numActivePlots(loadData('bac1c'))
+numActiveStd(make_parms('filter', 'bac1', 'normalize', 1))
+numActiveStdMultipleBinSizes(make_parms('filter', 'bac1', 'bin_sizes', [0.1 1 10]))
+numActiveDist(loadData('bac1c'), make_parms('frames', [2 4 20 35 45], 'hist_bin', 0.04, 'estimate_bin_sec', 1))
 
 %% std(rates)
-rateStd(make_parms('estimate_bin_sec', 1, 'filter', 's1'))
+rateStd(make_parms('estimate_bin_sec', 1, 'filter', 'bac1'))
 
 %%
-firstHours(loadData('s10a'));
+firstHours(loadData('bac10a'));
 
 %%
 figure; plot(firingRates(data.unitSpikeTimes{1}));
@@ -64,4 +64,4 @@ for iUnit=1:data.nUnits
 end
 
 %% Working with Eli Nelken's code
-uM = toNelkenStyle(loadData('s10a'));
+uM = toNelkenStyle(loadData('bac10a'));

@@ -10,12 +10,14 @@ function keys = getSessionKeys(parms)
     end
         
     switch sessionFilter
-        case 's1'
-            keys = {'s1a', 's1b', 's1c', 's1d'};
-        case 's10'
-            keys = {'s10a', 's10b', 's10c', 's10d'};
-        case 's40'
-            keys  ={'s40a', 's40b', 's40c' };
+        case 'bac1'
+            keys = {'bac1a', 'bac1b', 'bac1c', 'bac1d'};
+        case 'bac10'
+            keys = {'bac10a', 'bac10b', 'bac10c', 'bac10d'};
+        case 'cnqx40'
+            keys  ={'cnqx40a', 'cnqx40b', 'cnqx40c' };
+        case 'cntx2'
+            keys  ={'cntx2a', 'cntx2b' };
         otherwise
             keys = fieldnames(allConfigs);
     end    
