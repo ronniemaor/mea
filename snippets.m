@@ -65,3 +65,6 @@ end
 
 %% Working with Eli Nelken's code
 uM = toNelkenStyle(loadData('bac10a'));
+
+%% labeling tool
+labeling(make_parms('T',2, 'contextSize',5, 'data',data, 'fromHour',1, 'nHours', 2))
