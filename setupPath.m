@@ -1,4 +1,5 @@
 function setupPath()
+    path(pathdef)
     codeDir = fileparts(mfilename('fullpath'));
     path(path,codeDir);
     path(path,[codeDir '/lab']);
