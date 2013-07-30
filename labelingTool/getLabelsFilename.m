@@ -1,4 +1,4 @@
-function fname = getLabelsFilename(sessionKey)
-    dataDir = fileparts(getSessionDataPath(sessionKey));
-    fname = [dataDir '/labels.mat'];
+function fname = getLabelsFilename(sessionKey, fileSuffix)
+    [path,name,ext] = fileparts(getSessionDataPath(sessionKey));
+    fname = sprintf('%s/%s-%s-labels.mat',path,name,fileSuffix);
 end

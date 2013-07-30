@@ -8,6 +8,6 @@ function saveLabels(parms,state)
     x.yesTimes = state.yesTimes;
     x.noTimes = state.noTimes;
     
-    fname = getLabelsFilename(parms.data.sessionKey);
+    fname = getLabelsFilename(parms.data.sessionKey, parms.fileSuffix);
     save(fname, '-struct', 'x');
 end
