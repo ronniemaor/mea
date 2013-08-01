@@ -12,10 +12,10 @@ function drawNewTime(handles)
     for iUnit = 1:parms.data.nUnits
         times = parms.data.unitSpikeTimes{iUnit};
         times = times(times > tContextStart & times <= tContextEnd);
-        plot(times, iUnit*ones(size(times)), 'b.')
+        plot(times, iUnit*ones(size(times)), '.', 'color', 0.8*[1 1 1])
         hold on;
         times = times(times > tStart & times <= tEnd);
-        plot(times, iUnit*ones(size(times)), 'r.')
+        plot(times, iUnit*ones(size(times)), '.', 'color', [1 0 0.2])
         xlim([tContextStart tContextEnd])
         ylim([0 parms.data.nUnits+1])
     end
