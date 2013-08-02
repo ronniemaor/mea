@@ -1,7 +1,7 @@
 function drawNewTime(handles)
     parms = handles.parms;
     
-    tStart = chooseTime(parms);
+    tStart = chooseTime(handles);
     tEnd = tStart + parms.T;
     dt = parms.contextSize * parms.T;
     tContextStart = tStart - dt;
@@ -30,12 +30,3 @@ function drawNewTime(handles)
     guidata(handles.figureLabeling, handles);
 end
 
-function t = chooseTime(parms)
-    tHour = 20*60;
-    iHour = parms.fromHour + floor(rand*parms.nHours);
-    nBins = floor(tHour/parms.T);
-    nBuffer = ceil(parms.contextSize);
-    nLegalBins = nBins - 2*nBuffer;
-    dt = parms.T * (nBuffer + floor(rand*nLegalBins));
-    t = (iHour-1)*tHour + dt;
-end

@@ -67,4 +67,4 @@ end
 uM = toNelkenStyle(loadData('bac10a'));
 
 %% labeling tool
-labeling(make_parms('T',1, 'contextSize',4, 'data',data, 'fromHour',3, 'nHours', 1, 'fileSuffix', 'baseline'))
+labeling(make_parms('T',0.5, 'contextSize',8, 'data',data, 'fromHour',3, 'nHours', 1, 'fileSuffix', 'baseline'))
