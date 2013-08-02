@@ -6,6 +6,16 @@ function drawNewTime(handles)
     dt = parms.contextSize * parms.T;
     tContextStart = tStart - dt;
     tContextEnd = tEnd + dt;
+    
+    tX = take_from_struct(parms,'tX',10);
+    if tContextEnd - tContextStart > tX
+        xmin = tContextStart;
+        xmax = tContextEnd;
+    else
+        xMid = (tContextStart + tContextEnd)/2;
+        xmin = xMid - tX/2;
+        xmax = xMid + tX/2;
+    end    
 
     axes(handles.axesRaster);
     cla;
@@ -16,7 +26,7 @@ function drawNewTime(handles)
         hold on;
         times = times(times > tStart & times <= tEnd);
         plot(times, iUnit*ones(size(times)), '.', 'color', [1 0 0.2])
-        xlim([tContextStart tContextEnd])
+        xlim([xmin xmax])
         ylim([0 parms.data.nUnits+1])
     end
     set(handles.axesRaster, 'FontSize', 16)
