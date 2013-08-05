@@ -26,6 +26,7 @@ function data = addFromFile(data,fileData)
     nChannels = 0;
     nUnits = 0;
     nShortUnits = 0;
+    nUnstableUnits = 0;
     allFields = fieldnames(fileData);
     for iField = 1:length(allFields)
         f = allFields{iField};
@@ -47,6 +48,10 @@ function data = addFromFile(data,fileData)
                 nShortUnits = nShortUnits + 1;
                 continue
             end
+            if ~isStable(unitTimes, data.nBaselineHours, 0.3)
+                nUnstableUnits = nUnstableUnits + 1;
+                continue
+            end
             nUnits = nUnits + 1;
             data.unitIds(nUnits,1:2) = [chNum unitNum];
             data.unitSpikeTimes{nUnits} = unitTimes;
@@ -58,4 +63,15 @@ function data = addFromFile(data,fileData)
     data.nChannels = nChannels;
     data.nUnits = nUnits;
     data.nDiscardedShortUnits = nShortUnits;
+    data.nDiscardedUnstableUnits = nUnstableUnits;
+end
+
+function bStable = isStable(spikeTimes, nBaselineHours, threshold)
+    ISIs = calcISIs(spikeTimes);
+    fRate = @(x) 1/mean(x);
+    rateStart = fRate(ISIs{1});
+    rateEnd = fRate(ISIs{nBaselineHours});
+    deltaRate = rateEnd-rateStart;
+    change = deltaRate/rateStart;
+    bStable = abs(change) < threshold;
 end
