@@ -81,7 +81,7 @@ function updateGUI(handles)
         
         % update raster
         if ~isnan(e.pos)
-            drawRaster(e.hAxes, handles.parms.data, e.times(e.pos), labels)
+            drawRaster(e.hAxes, handles.parms.data, e.times(e.pos), add_parms(labels,'bDrawScore',true))
         end
     end    
 end
