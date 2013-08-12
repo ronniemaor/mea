@@ -12,12 +12,15 @@ function [scores, scoreTimes] = burstScore(data, tStart, tEnd, parms)
         bins = bins(bins <= nBins);
         unitActiveBins(iUnit,bins) = 1;
     end
-    pActive = sum(unitActiveBins) / data.nUnits;
+    pActive = sum(unitActiveBins,1) / data.nUnits;
     
-    h = 0.5 * [-1 -1 1 1];
-    nShift = 2; % number of positions to shift so times align with the beginning of the positive edge of the filter
-    scores = abs(conv(pActive',h,'valid'));
-    nScores = length(scores);
-    scores(:,2) = pActive(1+nShift:1+nShift+nScores-1);
-    scoreTimes = tStart + nShift*tBin + tBin*(0:nScores-1);
+    derivative = conv(pActive',0.5 * [1 1 -1 -1],'valid');
+    activity = conv(pActive',0.5 * [1 1],'valid');
+    nScores = length(derivative) - 2; % we lose two positions due to mis-alignment between times of positive and negative edges
+    scoreTimes = tStart + 3*tBin + tBin*(0:nScores-1);    
+    positiveEdgeDiff = derivative(1:end-2); % positive edge centered around each score time
+    negativeEdgeDiff = -derivative(3:end); % negative edge centered around each score time
+    activity = activity(3:3+nScores-1); % sum of activity around score time
+
+    scores = [positiveEdgeDiff negativeEdgeDiff activity];
 end
