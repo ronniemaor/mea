@@ -36,9 +36,7 @@ function drawRaster(hAxes, data, tStart, parms)
     if bDrawScore
         [scores, scoreTimes] = burstScore(data, tContextStart, tContextEnd, parms);
         scores = scores * data.nUnits;
-        plot(scoreTimes, scores(:,1), 'b-') % positive edge
-        plot(scoreTimes, scores(:,2), 'r-') % negative edge
-        plot(scoreTimes, scores(:,3), 'g-') % activity
+        plot(scoreTimes, scores, 'b-')
     end
 end
 

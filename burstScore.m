@@ -22,5 +22,6 @@ function [scores, scoreTimes] = burstScore(data, tStart, tEnd, parms)
     negativeEdgeDiff = -derivative(3:end); % negative edge centered around each score time
     activity = activity(3:3+nScores-1); % sum of activity around score time
 
-    scores = [positiveEdgeDiff negativeEdgeDiff activity];
+    edges = max(positiveEdgeDiff, negativeEdgeDiff);
+    scores = 2 * (0.65*edges + 0.35*activity);
 end
