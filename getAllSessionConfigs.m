@@ -17,6 +17,9 @@ function sessionConfigs = getAllSessionConfigs()
     sessionConfigs.cntx2a = newConfig('2uM-cntx/11.4.13_2uM_cntx.mat',3);
     sessionConfigs.cntx2b = newConfig('2uM-cntx/27.6.13_2uM_cntx.mat',4);    
     sessionConfigs.cntx2c = newConfig('2uM-cntx/30.6.13_2uM_cntx.mat',4);    
+    sessionConfigs.cntx2d = newConfig('2uM-cntx/9.7.13_2uM_cntx.mat',4); % first hour are blank due to technical issues
+    
+    sessionConfigs.aga200a = newConfig('200nM-aga/21.7.13_200nM_aga.mat',4);
 end
 
 function config = newConfig(filePath, nBaselineHours)
