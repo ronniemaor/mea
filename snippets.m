@@ -66,6 +66,7 @@ end
 %% Working with Eli Nelken's code
 uM = toNelkenStyle(loadData('bac10a'));
 
-%% labeling tool
+%% burst classification
 labeling(make_parms('T',0.5, 'contextSize',8, 'data',data, 'fromHour',3, 'nHours', 1, 'fileSuffix', 'baseline'))
 browseLabels(make_parms('data',data,'fileSuffix','baseline', 'estimate_bin_sec', 0.1))
+train(make_parms('data',data,'fileSuffix','baseline', 'estimate_bin_sec', 0.1))
