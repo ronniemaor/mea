@@ -3,7 +3,7 @@ function path = getSessionDataPath(sessionKey)
     baseDataDir = fullfile('/','cortex', 'data', 'MEA', 'Slutsky2013');
     
     % special cases
-    if isequal(getenv('COMPUTERNAME'),'RONNIE-LAPTOP')
+    if isequal(getenv('COMPUTERNAME'),'RONNIE-PC')
         baseDataDir = 'C:/data/slutsky2013/data';
     end
 
