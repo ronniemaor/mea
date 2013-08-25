@@ -24,9 +24,6 @@ function train(parms)
         edges = max(features(:,2), features(:,3));
         scores = 2 * (0.65*edges + 0.35*features(:,1));     
         fi = max(scores,[],1); 
-        if lbl == 1 && fi < 0.07
-            continue
-        end
         
         svmInstances = [svmInstances; fi];
         svmLabels = [svmLabels; lbl];
