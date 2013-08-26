@@ -69,4 +69,5 @@ uM = toNelkenStyle(loadData('bac10a'));
 %% burst classification
 labeling(make_parms('T',0.5, 'contextSize',8, 'data',data, 'fromHour',3, 'nHours', 1, 'fileSuffix', 'baseline'))
 browseLabels(make_parms('data',data,'fileSuffix','baseline', 'estimate_bin_sec', 0.1))
+merged = mergeLabels('bac10a', {'baseline-yuval', 'early', 'recovery-yuval'}, 'merged-yuval');
 train(make_parms('data',data,'fileSuffix','baseline', 'estimate_bin_sec', 0.1))

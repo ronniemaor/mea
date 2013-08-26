@@ -1,6 +1,6 @@
 function findMixture(parms)
     data = loadData('bac10a',1);
-    suffixes = {'baseline-yuval', 'early', 'recovery-yuval'};
+    suffixes = {'baseline-yuval', 'early', 'recovery-yuval', 'merged-yuval'};
     lstP = 0:0.05:1;
     parms.useAUC = take_from_struct(parms,'useAUC',false);
     
