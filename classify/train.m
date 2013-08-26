@@ -65,28 +65,42 @@ function [cvAccuracy,model,overfitAccuracy] = tryHyper(svmLabels,svmInstances, C
     strOptions = sprintf('-t 0 -q -c %f -w%d %.1f', C, smallLabel, 0.99*nBig/nSmall);
     accuracies = zeros(1,nFolds);
     for iFold = 1:nFolds
-        if isempty(smallFolds{iFold})
-            accuracies(iFold) = NaN;
-            continue;
-        end
         idxFold = [bigFolds{iFold}; smallFolds{iFold}];
-        accuracies(iFold) = trainOne(svmLabels(idxFold), svmInstances(idxFold), strOptions, parms);
+        accuracies(iFold) = trainOne(svmLabels, svmInstances, idxFold, strOptions, parms);
     end
-    cvAccuracy = nanmean(accuracies);
+    cvAccuracy = mean(accuracies);
 
-    [overfitAccuracy, model] = trainOne(svmLabels, svmInstances, strOptions, parms);
+    [overfitAccuracy, model] = trainOne(svmLabels, svmInstances, [], strOptions, parms);
 end
 
-function [accuracy,model] = trainOne(labels,instances,strOptions,parms)
-    model = svmtrain(labels, instances, strOptions);
-    [w,b] = getSvmWeights(model);
-    projection = instances * w' + b;
+function [accuracy,model] = trainOne(labels,instances,idxTest,strOptions,parms)
+    if isempty(idxTest)
+        testLabels = labels;
+        testInstances = instances;
+        trainLabels = labels;
+        trainInstances = instances;
+    else        
+        posTest = zeros(1,length(labels));
+        posTest(idxTest) = 1;
+        posTest = logical(posTest);
+        posTrain = ~posTest;
+        testLabels = labels(posTest);
+        testInstances = instances(posTest,:);
+        trainLabels = labels(posTrain);
+        trainInstances = instances(posTrain,:);
+    end
     
+    % training
+    model = svmtrain(trainLabels, trainInstances, strOptions);
+    
+    % testing
+    [w,b] = getSvmWeights(model);
+    testProjection = testInstances * w' + b;
     useAUC = take_from_struct(parms,'useAUC',false);
     if useAUC
-        accuracy = myauc(labels == 1,projection);
+        accuracy = myauc(testLabels == 1,testProjection);
     else
-        predictedLabels = sign(projection);
-        accuracy = sum(predictedLabels == labels) / length(labels);
+        predictedLabels = sign(testProjection);
+        accuracy = sum(predictedLabels == testLabels) / length(testLabels);
     end
 end
