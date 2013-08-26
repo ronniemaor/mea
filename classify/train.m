@@ -1,5 +1,8 @@
-function train(parms)
+function [model,accuracy] = train(parms)
     parms.useAUC = take_from_struct(parms,'useAUC',false);
+    parms.wEdges = take_from_struct(parms,'wEdges',0.65);
+    C = parms.C;
+    p = parms.wEdges;
 
     % load the labels
     fname = getLabelsFilename(parms.data.sessionKey, parms.fileSuffix);
@@ -23,7 +26,6 @@ function train(parms)
         end
         features = burstFeatures(parms.data, t, t+T, parms);
         
-        p = 0.8;
         edges = max(features(:,2), features(:,3));
         scores = p*edges + (1-p)*features(:,1);
         fi = max(scores,[],1); 
@@ -31,28 +33,8 @@ function train(parms)
         svmInstances = [svmInstances; fi];
         svmLabels = [svmLabels; lbl];
     end
-    
-    lstC = take_from_struct(parms,'lstC',logspace(-3,3,10));
 
-    nTrials = take_from_struct(parms,'nTrials',50);
-    trialCvAccuracies = zeros(nTrials,length(lstC));
-    trialOverfitAccuracies = zeros(nTrials,length(lstC));
-    for iTrial=1:nTrials
-        [trialCvAccuracies(iTrial,:), ~, trialOverfitAccuracies(iTrial,:)] = arrayfun(@(C) tryHyper(svmLabels,svmInstances,C,parms), lstC);
-    end
-    cvAccuracy = mean(trialCvAccuracies,1);
-    overfitAccuracy = mean(trialOverfitAccuracies,1);
-    
-    figure;
-    plot(log10(lstC),100*cvAccuracy,'b-',log10(lstC),100*overfitAccuracy,'r-');
-    title(sprintf('%s %s - dependaece on C',parms.data.sessionKey,parms.fileSuffix));
-    xlabel('log_{10}(C)')
-    if parms.useAUC
-        ylabel('AUC')
-    else
-        ylabel('accuracy (%correct)')
-    end
-    legend({'cross validation', 'overfitted'}, 'Location', 'NorthEastOutside')
+    [accuracy, model] = tryHyper(svmLabels,svmInstances,C,parms);
 end
 
 function [cvAccuracy,model,overfitAccuracy] = tryHyper(svmLabels,svmInstances, C, parms)

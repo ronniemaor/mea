@@ -1,32 +1,10 @@
-function findMixture(parms)
-    data = parms.data;
-    suffixes = take_from_struct(parms, 'suffixes', {'baseline-yuval', 'early', 'recovery-yuval', 'merged-yuval'});
-    lstP = 0:0.05:1;
+function findC(parms)
     parms.useAUC = take_from_struct(parms,'useAUC',false);
-    parms.estimate_bin_sec = take_from_struct(parms, 'estimate_bin_sec', 0.05);
-    
-    nSuffixes = length(suffixes);
-    figure;    
-    for iSuffix = 1:nSuffixes
-        suffix = suffixes{iSuffix};
-        accuracies = getAccuracies(data,suffix,lstP,parms);
-        plot(lstP,accuracies);
-        title(sprintf('%s - dependence on w_{edges}',data.sessionKey))
-        xlabel('w_{edges}')
-        if parms.useAUC
-            ylabel('AUC')
-        else
-            ylabel('% correct')
-        end
-        legend(suffixes(1:iSuffix),'Location','NorthEastOutside');
-        drawnow
-        hold all;
-    end
-end
+    parms.wEdges = take_from_struct(parms,'wEdges',0.65);
+    p = parms.wEdges;
 
-function accuracies = getAccuracies(data,suffix,lstP,parms)
     % load the labels
-    fname = getLabelsFilename(data.sessionKey, suffix);
+    fname = getLabelsFilename(parms.data.sessionKey, parms.fileSuffix);
     labels = load(fname);
 
     nYes = length(labels.yesTimes);
@@ -35,10 +13,8 @@ function accuracies = getAccuracies(data,suffix,lstP,parms)
     T = labels.T;
     
     % convert the data to libsvm input format
-    nBinsPerWindow = size(burstFeatures(data, 100, 100+T, parms),1);
-    edges = zeros(nBinsPerWindow, n);
-    activities = zeros(nBinsPerWindow, n);
-    svmLabels = zeros(n,1);
+    svmInstances = [];
+    svmLabels = [];
     for i=1:n
         if i <= nYes
             lbl = 1;
@@ -47,28 +23,37 @@ function accuracies = getAccuracies(data,suffix,lstP,parms)
             lbl = -1;
             t = labels.noTimes(i-nYes);
         end
-        svmLabels(i) = lbl;
-        features = burstFeatures(data, t, t+T, parms);
-        activities(:,i) = features(:,1);        
-        edges(:,i) = max(features(:,2), features(:,3));
+        features = burstFeatures(parms.data, t, t+T, parms);
+        
+        edges = max(features(:,2), features(:,3));
+        scores = p*edges + (1-p)*features(:,1);
+        fi = max(scores,[],1); 
+        
+        svmInstances = [svmInstances; fi];
+        svmLabels = [svmLabels; lbl];
     end
     
-    lstC = take_from_struct(parms,'lstC',1000);
+    lstC = take_from_struct(parms,'lstC',logspace(-3,3,10));
+
     nTrials = take_from_struct(parms,'nTrials',50);
-    accuracies = zeros(1,length(lstP));
-    for iP = 1:length(lstP)
-        p = lstP(iP);
-        
-        binScores = p*edges + (1-p)*activities;
-        scores = max(binScores,[],1); 
-        svmInstances = scores';
-        
-        trialAccuracies = zeros(nTrials,length(lstC));
-        for iTrial=1:nTrials
-            trialAccuracies(iTrial,:) = arrayfun(@(C) tryHyper(svmLabels,svmInstances,C,parms), lstC);
-        end
-        accuracies(iP) = max(mean(trialAccuracies,1)); % mean over trials, then take best C
+    trialCvAccuracies = zeros(nTrials,length(lstC));
+    trialOverfitAccuracies = zeros(nTrials,length(lstC));
+    for iTrial=1:nTrials
+        [trialCvAccuracies(iTrial,:), ~, trialOverfitAccuracies(iTrial,:)] = arrayfun(@(C) tryHyper(svmLabels,svmInstances,C,parms), lstC);
     end
+    cvAccuracy = mean(trialCvAccuracies,1);
+    overfitAccuracy = mean(trialOverfitAccuracies,1);
+    
+    figure;
+    plot(log10(lstC),100*cvAccuracy,'b-',log10(lstC),100*overfitAccuracy,'r-');
+    title(sprintf('%s %s - dependaece on C',parms.data.sessionKey,parms.fileSuffix));
+    xlabel('log_{10}(C)')
+    if parms.useAUC
+        ylabel('AUC')
+    else
+        ylabel('accuracy (%correct)')
+    end
+    legend({'cross validation', 'overfitted'}, 'Location', 'NorthEastOutside')
 end
 
 function [cvAccuracy,model,overfitAccuracy] = tryHyper(svmLabels,svmInstances, C, parms)

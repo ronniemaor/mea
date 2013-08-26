@@ -34,9 +34,19 @@ function drawRaster(hAxes, data, tStart, parms)
     
     bDrawScore = take_from_struct(parms,'bDrawScore',false);
     if bDrawScore
-        [scores, scoreTimes] = burstScore(data, tContextStart, tContextEnd, parms);
-        scores = scores * data.nUnits;
-        plot(scoreTimes, scores, 'b-')
+        [features, featureTimes] = burstFeatures(data, tContextStart, tContextEnd, parms);
+        activity = features(:,1);
+        posEdge = features(:,2);
+        negEdge = features(:,3);
+
+        edges = max(posEdge,negEdge);
+        p = take_from_struct(parms,'wEdges',0.65);
+        scores = p*edges + (1-p)*activity;        
+        plot(featureTimes, 2*data.nUnits*scores, 'b-')
+        
+%         plot(featureTimes, 2*data.nUnits*activity, 'b-')
+%         plot(featureTimes, 2*data.nUnits*posEdge, 'g-')
+%         plot(featureTimes, 2*data.nUnits*negEdge, 'r-')
     end
 end
 
