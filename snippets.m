@@ -73,5 +73,6 @@ merged = mergeLabels('bac10a', {'baseline-yuval', 'early', 'recovery-yuval'}, 'm
 findC(make_parms('data',data,'fileSuffix','baseline', 'estimate_bin_sec', 0.05))
 findMixture(make_parms('data',data, 'suffixes', {'baseline-yuval', 'early'}, 'useAUC', 1));
 [model,accuracy] = train(make_parms('data',data,'fileSuffix','merged-yuval', 'estimate_bin_sec', 0.05, 'C', 1000));
+showROC(make_parms('data',data,'fileSuffix','merged-yuval'));
 
 hourlyBurstRate(make_parms('data',data))
