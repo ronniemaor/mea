@@ -4,9 +4,7 @@ function [model,accuracy] = showROC(parms)
     parms.threshold = take_from_struct(parms, 'threshold', 0.1641);
 
     % load the labels
-    fname = getLabelsFilename(parms.data.sessionKey, parms.fileSuffix);
-    labelsData = load(fname);
-
+    labelsData = loadLabels(parms.data.sessionKey, parms.fileSuffix);
     nYes = length(labelsData.yesTimes);
     nNo = length(labelsData.noTimes);
     n = nYes + nNo;

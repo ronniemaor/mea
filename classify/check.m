@@ -5,9 +5,7 @@ function [accuracy,svmLabels, svmInstances] = check(parms)
     parms.estimate_bin_sec = take_from_struct(parms, 'estimate_bin_sec',0.05);
 
     % load the labels
-    fname = getLabelsFilename(parms.data.sessionKey, parms.fileSuffix);
-    labels = load(fname);
-
+    labels = loadLabels(parms.data.sessionKey, parms.fileSuffix);
     nYes = length(labels.yesTimes);
     nNo = length(labels.noTimes);
     n = nYes + nNo;

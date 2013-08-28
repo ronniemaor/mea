@@ -34,8 +34,7 @@ function browseLabels_OpeningFcn(hObject, eventdata, handles, varargin)
     guidata(handles.figureBrowseLabels, handles);
     
     % load labels data
-    fname = getLabelsFilename(handles.parms.data.sessionKey, handles.parms.fileSuffix);
-    labels = load(fname);
+    labels = loadLabels(handles.parms.data.sessionKey, handles.parms.fileSuffix);
     setappdata(handles.figureBrowseLabels, 'labels', labels);
     
     elements(1) = make_parms( ...

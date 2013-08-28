@@ -1,7 +1,6 @@
 function [flatYes,flatNo] = applyFeatures(parms)
     % load the labels
-    fname = getLabelsFilename(parms.data.sessionKey, parms.fileSuffix);
-    labels = load(fname);
+    labels = loadLabels(parms.data.sessionKey, parms.fileSuffix);
 
     nYes = length(labels.yesTimes);
     nNo = length(labels.noTimes);

@@ -2,7 +2,7 @@ function merged = mergeLabels(sessionKey, suffixes, outputSuffix)
     merged = make_parms('sessionKey', sessionKey, 'yesTimes', [], 'noTimes', []);
 
     for i=1:length(suffixes)
-        labels = load(getLabelsFilename(sessionKey,suffixes{i}));
+        labels = loadLabels(sessionKey,suffixes{i});
         assert(labels.T == take_from_struct(merged,'T',labels.T));
         assert(labels.contextSize == take_from_struct(merged,'contextSize',labels.contextSize));
         merged.T = labels.T;

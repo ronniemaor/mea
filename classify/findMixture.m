@@ -26,9 +26,7 @@ end
 
 function accuracies = getAccuracies(data,suffix,lstP,parms)
     % load the labels
-    fname = getLabelsFilename(data.sessionKey, suffix);
-    labels = load(fname);
-
+    labels = loadLabels(data.sessionKey, suffix);
     nYes = length(labels.yesTimes);
     nNo = length(labels.noTimes);
     n = nYes + nNo;
