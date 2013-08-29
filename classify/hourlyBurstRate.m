@@ -22,7 +22,7 @@ function hourlyBurstRate(parms)
     end
     burstRatePerHour = burstsPerHour / tHour; % rate = bursts/sec
     
-    rates = firingRates(cell2mat(parms.data.unitSpikeTimes'));
+    rates = firingRates(cell2mat(parms.data.unitSpikeTimes')) ./ parms.data.nUnits;
     rates = rates(1:nHours);
     
     if bNormalize
