@@ -21,6 +21,9 @@ function drawRaster(hAxes, data, tStart, parms)
     for iUnit = 1:data.nUnits
         times = data.unitSpikeTimes{iUnit};
         times = times(times > tContextStart & times <= tContextEnd);
+        if isempty(times)
+            continue
+        end
         plot(times, iUnit*ones(size(times)), '.', 'color', colorInactive)
         hold on;
         times = times(times > tStart & times <= tEnd);

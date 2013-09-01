@@ -1,7 +1,7 @@
 function showROC(parms)
-    parms.wEdges = take_from_struct(parms,'wEdges',0.65);
+    %parms.wEdges = take_from_struct(parms,'wEdges',0.65);
     parms.estimate_bin_sec = take_from_struct(parms, 'estimate_bin_sec',0.05);
-    parms.threshold = take_from_struct(parms, 'threshold', 0.1641);
+    %parms.threshold = take_from_struct(parms, 'threshold', 0.1641);
     
     figure; set(gca,'FontSize',16);
     
