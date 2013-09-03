@@ -68,13 +68,13 @@ uM = toNelkenStyle(loadData('bac10a'));
 
 %% burst classification
 labeling(make_parms('T',0.5, 'contextSize',8, 'data',data, 'fromHour',3, 'nHours', 1, 'fileSuffix', 'baseline'))
-browseLabels(make_parms('data',data,'fileSuffix','merged-yuval', 'estimate_bin_sec', 0.05, 'wEdges', 0.65))
+browseLabels(make_parms('data',data,'fileSuffix','merged-yuval', 'estimate_bin_sec', 0.05, 'wEdges', 0.65, 'threshold', 0.1641))
 merged = mergeLabels('bac10a', {'baseline-yuval', 'early', 'recovery-yuval'}, 'merged-yuval');
 findC(make_parms('data',data,'fileSuffix','baseline', 'estimate_bin_sec', 0.05))
 findMixture(make_parms('data',data, 'suffixes', {'baseline-yuval', 'early'}, 'useAUC', 1));
 [model,accuracy] = train(make_parms('data',data,'fileSuffix','merged-yuval', 'estimate_bin_sec', 0.05, 'C', 1000));
 [w,b] = getSvmWeights(model); % threshold = -b/w
-showROC(make_parms('data',data,'suffixes',{'merged'}));
+showROC(make_parms('data',data,'suffixes',{'merged'},'wEdges',0.65,'threshold',0.1641));
 checkAccuracy(make_parms('data',data,'fileSuffix','merged','threshold',0.1641,'wEdges',0.65))
 
 hourlyBurstRate(make_parms('data',data, 'wEdges',0.1, 'threshold', 0.1125))

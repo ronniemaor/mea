@@ -44,9 +44,14 @@ function drawRaster(hAxes, data, tStart, parms)
 
         edges = max(posEdge,negEdge);
         p = take_from_struct(parms,'wEdges',0.65);
-        scores = p*edges + (1-p)*activity;        
-        plot(featureTimes, 2*data.nUnits*scores, 'b-')
+        scores = p*edges + (1-p)*activity;
+        scaleFactor = 2*data.nUnits;
+        plot(featureTimes, scaleFactor*scores, 'b-')
         
+        threshold = take_from_struct(parms,'threshold',NaN);
+        if ~isnan(threshold)
+            plot([tContextStart tContextEnd], scaleFactor*[threshold threshold], 'k--')
+        end
 %         plot(featureTimes, 2*data.nUnits*activity, 'b-')
 %         plot(featureTimes, 2*data.nUnits*posEdge, 'g-')
 %         plot(featureTimes, 2*data.nUnits*negEdge, 'r-')
