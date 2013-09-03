@@ -26,8 +26,16 @@ function drawRaster(hAxes, data, tStart, parms)
         end
         plot(times, iUnit*ones(size(times)), '.', 'color', colorInactive)
         hold on;
-        times = times(times > tStart & times <= tEnd);
-        plot(times, iUnit*ones(size(times)), '.', 'color', colorActive)
+        
+        burstStartTime = take_from_struct(parms,'burstStartTime',NaN);
+        burstEndTime = take_from_struct(parms,'burstEndTime',NaN);
+        if ~isnan(burstStartTime) && ~isnan(burstEndTime)
+            burstTimes = times(times > burstStartTime & times <= burstEndTime);
+            plot(burstTimes, iUnit*ones(size(burstTimes)), '.', 'color', colorActive)
+        end
+        
+        yInstanceMark = data.nUnits+0.5;
+        plot([tStart tEnd], [yInstanceMark yInstanceMark], 'b', 'LineWidth', 3)
         xlim([xmin xmax])
         ylim([0 data.nUnits+1])
     end

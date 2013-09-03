@@ -3,7 +3,7 @@ function varargout = browseLabels(varargin)
 
 % Edit the above text to modify the response to help browseLabels
 
-% Last Modified by GUIDE v2.5 11-Aug-2013 10:37:31
+% Last Modified by GUIDE v2.5 04-Sep-2013 15:30:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -25,17 +25,28 @@ end
 % End initialization code - DO NOT EDIT
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Initialization
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function browseLabels_OpeningFcn(hObject, eventdata, handles, varargin)
     % Choose default command line output for browseLabels
     handles.output = hObject;
     
     % set parms from the input
     handles.parms = varargin{1};
+    handles.parms.bDrawScore = take_from_struct(handles.parms,'bDrawScore',true);
+    set(handles.checkboxShowScore, 'Value',handles.parms.bDrawScore);
     guidata(handles.figureBrowseLabels, handles);
     
     % load labels data
-    labels = loadLabels(handles.parms.data.sessionKey, handles.parms.fileSuffix);
+    sessionKey = handles.parms.data.sessionKey;
+    fileSuffix = handles.parms.fileSuffix;
+    [~,dataFileName] = fileparts(handles.parms.data.dataFile);
+    set(handles.textSession,'String',sprintf('Session: %s (%s), Labels: %s', sessionKey, dataFileName, fileSuffix))
+    labels = loadLabels(sessionKey, fileSuffix);
     setappdata(handles.figureBrowseLabels, 'labels', labels);
+    setappdata(handles.figureBrowseLabels, 'isDirty', false);
     
     elements(1) = make_parms( ...
         'hAxes', handles.axesRasterBurst, ...
@@ -53,7 +64,7 @@ function browseLabels_OpeningFcn(hObject, eventdata, handles, varargin)
         'pos', ternary(isempty(labels.noTimes),NaN,1), ...
         'times', labels.noTimes ...
     );
-    
+        
     setappdata(handles.figureBrowseLabels, 'elements', elements);
 
     updateGUI(handles)
@@ -62,6 +73,10 @@ end
 function varargout = browseLabels_OutputFcn(hObject, eventdata, handles)
     varargout{1} = handles.output;
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% GUI Logic
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function updateGUI(handles)
     labels = getappdata(handles.figureBrowseLabels, 'labels');
@@ -80,10 +95,87 @@ function updateGUI(handles)
         
         % update raster
         if ~isnan(e.pos)
-            drawRaster(e.hAxes, handles.parms.data, e.times(e.pos), ... 
-                add_parms(handles.parms,'bDrawScore',true, 'T', labels.T, 'contextSize', labels.contextSize))
+            more_parms = add_parms(handles.parms, ...
+                'T', labels.T, ...
+                'contextSize', labels.contextSize, ...
+                'burstStartTime', labels.burstStartTimes(e.pos), ...
+                'burstEndTime', labels.burstEndTimes(e.pos) ...
+            );
+            drawRaster(e.hAxes, handles.parms.data, e.times(e.pos), more_parms)
         end
-    end    
+    end
+    
+    isDirty = getappdata(handles.figureBrowseLabels, 'isDirty');
+    setEnabled(handles.pushbuttonSave, isDirty)
+    
+    % plotting removes these callbacks, so we must add them again each time we update the display
+    if ~isnan(elements(iElement).pos)
+        set(handles.axesRasterBurst,'buttondownfcn',@(hObject,eventdata) axesRasterBurst_ButtonDownFcn(hObject,eventdata,handles))
+    end
+end
+
+function updatePosition(handles, isBurst, delta)
+    iElement = ternary(isBurst,1,2);
+    elements = getappdata(handles.figureBrowseLabels, 'elements');
+    elements(iElement).pos = elements(iElement).pos + delta;
+    setappdata(handles.figureBrowseLabels, 'elements', elements);
+    updateGUI(handles)
+end
+
+function updateDrawScore(handles, bDrawScore)
+    handles.parms.bDrawScore = bDrawScore;
+    guidata(handles.figureBrowseLabels, handles);
+    updateGUI(handles)
+end
+
+function updateBurstStartEnd(handles, time, isStart)
+    labels = getappdata(handles.figureBrowseLabels, 'labels');
+    elements = getappdata(handles.figureBrowseLabels, 'elements');
+    pos = elements(1).pos;
+    epsilon = 0.005;
+
+    startTime = labels.burstStartTimes(pos);
+    endTime = labels.burstEndTimes(pos);
+    if isnan(time)
+        startTime = NaN;
+        endTime = NaN;
+    elseif isStart
+        startTime = findNearestSpikeTime(handles.parms.data,time,true) - epsilon;
+        if isnan(endTime) || endTime < time
+            endTime = startTime + 2*epsilon;
+        end
+    else % it's an end time
+        if startTime < time
+            endTime = findNearestSpikeTime(handles.parms.data,time,false) + epsilon;
+        end
+    end
+    labels.burstStartTimes(pos) = startTime;
+    labels.burstEndTimes(pos) = endTime;
+    
+    setappdata(handles.figureBrowseLabels, 'labels', labels);
+    setappdata(handles.figureBrowseLabels, 'isDirty', true);
+    updateGUI(handles)
+end
+
+function saveChanges(handles)
+    sessionKey = handles.parms.data.sessionKey;
+    suffix = handles.parms.fileSuffix;
+    labels = getappdata(handles.figureBrowseLabels, 'labels');
+    save(getLabelsFilename(sessionKey,suffix), '-struct', 'labels');
+    setappdata(handles.figureBrowseLabels, 'isDirty', false)
+    updateGUI(handles)
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Helpers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function t = findNearestSpikeTime(data,time,isBurstStart)
+    spikeTimes = cell2mat(data.unitSpikeTimes');
+    if isBurstStart
+        t = min(spikeTimes(spikeTimes >= time));
+    else
+        t = max(spikeTimes(spikeTimes <= time));
+    end
 end
 
 function setEnabled(h,bEnabled)
@@ -94,13 +186,9 @@ function setEnabled(h,bEnabled)
     end
 end    
 
-function updatePosition(handles, isBurst, delta)
-    iElement = ternary(isBurst,1,2);
-    elements = getappdata(handles.figureBrowseLabels, 'elements');
-    elements(iElement).pos = elements(iElement).pos + delta;
-    setappdata(handles.figureBrowseLabels, 'elements', elements);
-    updateGUI(handles)
-end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% GUI Callbacks
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function buttonPrevBurst_Callback(hObject, eventdata, handles)
     updatePosition(handles,true,-1);
@@ -116,4 +204,27 @@ end
 
 function buttonNextNonBurst_Callback(hObject, eventdata, handles)
     updatePosition(handles,false,1);
+end
+
+function axesRasterBurst_ButtonDownFcn(hObject, eventdata, handles)
+    cp = get(gca,'currentpoint');
+    time = cp(1,1);
+    selectionType = get(handles.figureBrowseLabels,'selectiontype'); % 'normal' (left) or 'alt' (right)
+    isLeftButton = isequal(selectionType, 'normal');
+    updateBurstStartEnd(handles, time, isLeftButton);
+end
+
+function figureBrowseLabels_WindowKeyPressFcn(hObject, eventdata, handles)
+    if isequal(eventdata.Key,'delete')
+        updateBurstStartEnd(handles, NaN, NaN);
+    end
+end
+
+function pushbuttonSave_Callback(hObject, eventdata, handles)
+    saveChanges(handles);
+end
+
+function checkboxShowScore_Callback(hObject, eventdata, handles)
+    bChecked = get(handles.checkboxShowScore, 'Value');
+    updateDrawScore(handles, bChecked);
 end
