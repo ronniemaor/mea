@@ -2,9 +2,10 @@ function path = getSessionDataPath(sessionKey)
     % default dir
     baseDataDir = fullfile('/','cortex', 'data', 'MEA', 'Slutsky2013');
     
-    % special cases
-    if isequal(getenv('COMPUTERNAME'),'RONNIE-PC')
-        baseDataDir = 'C:/data/slutsky2013/data';
+    if ~exist(baseDataDir,'dir')    
+        % try to see if data is next to code dir
+        codeDir = fileparts(mfilename('fullpath'));
+        baseDataDir = fullfile(codeDir,'..', 'data');
     end
 
     if ~exist(baseDataDir,'dir')
