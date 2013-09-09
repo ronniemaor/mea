@@ -1,5 +1,4 @@
-function [best_model, AUC, FPRs, TPRs, THRESHs] = train_and_test(features, ...
-						  labels, parms)
+function [best_model, AUC, FPRs, TPRs, THRESHs] = train_and_test(features, labels, parms)
 %
   method = take_from_struct(parms, 'method', 'lasso');
   seed = take_from_struct(parms, 'seed', 1);  
@@ -8,10 +7,10 @@ function [best_model, AUC, FPRs, TPRs, THRESHs] = train_and_test(features, ...
     figure(2); clf; hold on;
     clrs = set_colors;    
   end
-
   
   for i_fold = 1:5 
-    fprintf('i_fold = %d\n', i_fold);
+    %fprintf('i_fold = %d\n', i_fold);
+    
     % Split, train and test
     [trn_features, tst_features, trn_labels, tst_labels] = ...
 	split_data(features, labels, seed, i_fold);
@@ -36,8 +35,7 @@ function [best_model, AUC, FPRs, TPRs, THRESHs] = train_and_test(features, ...
     end
 
     % Score the model on the test sampels 
-    tst_scores = test_model(method, tst_features, best_model);
-    
+    tst_scores = test_model(method, tst_features, best_model);    
     
     [FPRs{i_fold}, TPRs{i_fold}, THRESHs{i_fold}, AUCs(i_fold)] = ...
 	perfcurve(tst_labels, tst_scores, 1);

@@ -8,7 +8,6 @@ function [inferred_times, errs] = infer_burst_start(n_active, ...
   % 1. It is within the window [-2sec] before the peak
   % 2. It is in the last "contig" of indices that exceed the
   %    threshold ??////???
-
   
   max_burst_width = take_from_struct(parms, 'max_burst_width', 0.5);
   estimate_bin_sec = take_from_struct(parms, 'estimate_bin_sec');  
@@ -29,17 +28,17 @@ function [inferred_times, errs] = infer_burst_start(n_active, ...
 	estimate_bin_sec:peak_time+10*estimate_bin_sec;
     
     % Preprocess
-    candidate_start_times_in_tbin = ceil(candidate_start_times / estimate_bin_sec);
-    features = extract_features(n_active, candidate_start_times_in_tbin, f_list);    
+    features = extract_features(n_active, candidate_start_times, f_list, parms);    
 
     tst_scores = test_model(method, features, best_model);
     [~, ind] = max(tst_scores);
     inferred_times(i_burst) = (ind-1)*estimate_bin_sec + peak_time-max_burst_width;
     errs(i_burst) = abs(inferred_times(i_burst) - labeled_start_times(i_burst));
 
-    do_plot = take_from_struct(parms, 'do_plot', 1);
+    do_plot = take_from_struct(parms, 'do_plot', true);
     if do_plot
-      figure(2) ; clf; hold on;    
+      figure(2) ; clf; hold on;
+      candidate_start_times_in_tbin = ceil(candidate_start_times / estimate_bin_sec);
       [i,j] = find (S(:, candidate_start_times_in_tbin(1):candidate_start_times_in_tbin(end)));
       plot((j-1)*estimate_bin_sec + peak_time-max_burst_width, i, '.');
       plot(candidate_start_times, tst_scores*40, 'Color', 'k')    
