@@ -11,22 +11,24 @@ if ~exist('data', 'var')
   % Load labels 
   labelsData = loadLabels(sessionKey, 'merged-yuval');
   labelsData = remove_nans_from_labels_data(labelsData);
-  beg_labels_in_sec = labelsData.burstStartTimes;
   
   % Shift begin times that have <=1 spikes
   n_active = times_to_num_active_units(data, estimate_bin_sec);
   
-  beg_labels_in_sec = align_to_nonzero_beg(n_active, beg_labels_in_sec, parms);
+  beg_labels_in_sec = tighten_burst_start_end_labels(n_active, labelsData.burstStartTimes, true, parms);
+  end_labels_in_sec = tighten_burst_start_end_labels(n_active, labelsData.burstEndTimes, false, parms);
 end
 
-[f_list, parms] = take_from_struct(parms, 'f_list', {'n0', 'n-1', ...
-		    'n-2', 'n-3', 'n+1', 'n+2', 'n+3' 'd+1', 'd+2', ...
-		    'd+3', 'd-1' 'd-2', 'd+3', 's+1', 's-1'});
+[f_list, parms] = take_from_struct(parms, 'f_list', { ...
+    'n0', ...
+    'n-1', 'n-2', 'n-3', ...
+    'n+1', 'n+2', 'n+3', ...
+    'd+1', 'd+2', 'd+3', ...
+    'd-1', 'd-2', 'd-3', ...
+    's+1', ...
+    's-1' ...
+});
 
-[features, labels] = build_train_set(n_active, beg_labels_in_sec, parms);
-labels(labels<0) = 0;
-
-method = take_from_struct(parms, 'method', 'lassoglm');
 [do_plot, parms] = take_from_struct(parms, 'do_plot', false);
 
 if do_plot
@@ -34,10 +36,15 @@ if do_plot
 end
 
 % Train and Test
-if ~exist('best_model', 'var')
-  parms.method = 'lasso';
-  [best_model, AUC] = train_and_test(features, labels, parms);
-  fprintf('Computed model. AUC=%g\n', AUC);
+if ~exist('beg_best_model', 'var')
+  [beg_features, beg_labels] = build_train_set(n_active, beg_labels_in_sec, true, parms);
+  [beg_best_model, beg_AUC] = train_and_test(beg_features, beg_labels, parms);
+  fprintf('Computed model for burst beginnings. AUC=%g\n', beg_AUC);
+end
+if ~exist('end_best_model', 'var')
+  [end_features, end_labels] = build_train_set(n_active, end_labels_in_sec, false, parms);
+  [end_best_model, end_AUC] = train_and_test(end_features, end_labels, parms);
+  fprintf('Computed model for burst endings. AUC=%g\n', end_AUC);
 end
 
  % Infer burst start 
@@ -46,9 +53,8 @@ if ~exist('S',  'var')
 end
 
 burst_peak_times = find_burst_peak(data, labelsData.yesTimes, parms);
-[inferred_times, errs] = infer_burst_start(n_active, burst_peak_times, ...
-					   best_model, parms, S, ...
-					   beg_labels_in_sec);
+[beg_inferred_times, beg_errs] = infer_burst_edge(n_active, burst_peak_times, beg_best_model, parms, S, beg_labels_in_sec);
+[end_inferred_times, end_errs] = infer_burst_edge(n_active, burst_peak_times, end_best_model, parms, S, end_labels_in_sec);
 
 return % work in progress
 
@@ -56,5 +62,5 @@ err = eval_burst_beg(burst_times, inferred_times);
  
 % Infer bursts and beginings
 [burst_peak_times, burst_peak_scores] = infer_bursts(data, parms);
-[times, scores] = infer_burst_start(data, burst_peak_times, best_model, parms);
+[times, scores] = infer_burst_edge(data, burst_peak_times, best_model, parms);
 
