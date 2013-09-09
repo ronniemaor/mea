@@ -1,5 +1,5 @@
 function [features, featureTimes] = burstFeatures(data, tStart, tEnd, parms)
-    w = take_from_struct(parms, 'estimate_bin_sec', 0.05);
+    w = take_from_struct(parms, 'estimate_bin_sec');
     tBin = w / 2; % we use 50% overlap between the original patterns, so we use half-sized bins that serve for both shifts
 
     % compute a vector of spike counts at 'bin..' resolution

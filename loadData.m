@@ -1,4 +1,16 @@
 function data = loadData(sessionKey, bSilent)
+  
+    persistent local_data
+    persistent local_session_key    
+    
+    if ~isempty(local_data) && strcmp(sessionKey, ...
+				      local_session_key)==1
+      data = local_data;
+      return
+    end
+    
+    
+  
     if nargin < 2
         bSilent = 0;
     end    
@@ -13,8 +25,16 @@ function data = loadData(sessionKey, bSilent)
     data.nBaselineHours = sessionConfig.nBaselineHours;
     fileData = load(dataFile);
     data = addFromFile(data,fileData);
+    
+    
+    local_data = data; 
+    local_session_key = sessionKey;
+    
 end
 
+
+
+% ==========================================
 function data = addFromFile(data,fileData)
     shortUnitThreshold = 7; % ignore units that don't have spikes for at least this number of hours
     
