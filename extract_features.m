@@ -5,15 +5,27 @@ function features = extract_features(n_active, times, f_list, parms)
   num_features = length(f_list);
   features = zeros(num_times, num_features);
   
-  times_in_tbin = ceil(times / parms.estimate_bin_sec);
+  times_in_tbin = ceil((times+0.001) / parms.estimate_bin_sec);
 
+  if length(unique(times_in_tbin)) ~= length(times_in_tbin)
+    error(' numerical blabl a');
+  end
+  
+  
   n0 = n_active(times_in_tbin);
   np1 = n_active(times_in_tbin+1);
   np2 = n_active(times_in_tbin+2);
   np3 = n_active(times_in_tbin+3);
+  np4 = n_active(times_in_tbin+4);
+  np5 = n_active(times_in_tbin+5);
+  np6 = n_active(times_in_tbin+6);
+  
   nm1 = n_active(times_in_tbin-1);
   nm2 = n_active(times_in_tbin-2);
   nm3 = n_active(times_in_tbin-3);
+  nm4 = n_active(times_in_tbin-4);
+  nm5 = n_active(times_in_tbin-5);
+  nm6 = n_active(times_in_tbin-6);  
 
   for i_f = 1:num_features
     f = f_list{i_f};
@@ -39,7 +51,16 @@ function features = extract_features(n_active, times, f_list, parms)
      case 's-2',   features(:,i_f) = n0 + nm2 + nm2;
      case 's+3',   features(:,i_f) = n0 + np1 + np2 + np3;
      case 's-3',   features(:,i_f) = n0 + nm2 + nm2 + nm3;
-            
+
+     case 's+4',   features(:,i_f) = n0 + np1 + np2 + np3 + np4;
+     case 's-4',   features(:,i_f) = n0 + nm2 + nm2 + nm3 - np4;
+      
+     case 's+5',   features(:,i_f) = n0 + np1 + np2 + np3 + np4 + np5;
+     case 's-5',   features(:,i_f) = n0 + nm2 + nm2 + nm3 - np4 - np5; 
+      
+     case 's+6',   features(:,i_f) = n0 + np1 + np2 + np3 + np4 + np5 + np6;
+     case 's-6',   features(:,i_f) = n0 + nm2 + nm2 + nm3 - np4 - np5 - np6;
+      
      otherwise, error('invalid f_list');
     end
   end  
