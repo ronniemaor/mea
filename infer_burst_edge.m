@@ -1,7 +1,7 @@
 function [inferred_times, errs, valids] = infer_burst_edge(n_active, ...
 						  burst_peak_times, ...
 						  best_model, parms, ...
-						  S, labels_in_sec)
+						  S, labels_in_sec, bStart)
   
   % Given a set of burst-peak times, find for each one of the them
   % a burst-start time. that obeys the following: 
@@ -24,11 +24,15 @@ function [inferred_times, errs, valids] = infer_burst_edge(n_active, ...
   for i_burst = 1:num_bursts
     peak_time = valid_burst_peak_times(i_burst);
     
-    candidate_start_times = peak_time-max_burst_width: ...
-	estimate_bin_sec:peak_time+10*estimate_bin_sec;
+
+    if bStart
+        candidate_edge_times = peak_time-max_burst_width : estimate_bin_sec : peak_time+10*estimate_bin_sec;
+    else
+        candidate_edge_times = peak_time-10*estimate_bin_sec : estimate_bin_sec : peak_time+max_burst_width;
+    end
     
     % Preprocess
-    features = extract_features(n_active, candidate_start_times, f_list, parms);    
+    features = extract_features(n_active, candidate_edge_times, f_list, parms);
 
     tst_scores = test_model(method, features, best_model);
     [~, ind] = max(tst_scores);
@@ -38,14 +42,15 @@ function [inferred_times, errs, valids] = infer_burst_edge(n_active, ...
     do_plot = take_from_struct(parms, 'do_plot', true);
     if do_plot
       figure(2) ; clf; hold on;
-      candidate_start_times_in_tbin = ceil(candidate_start_times / estimate_bin_sec);
+      candidate_start_times_in_tbin = ceil(candidate_edge_times / estimate_bin_sec);
       [i,j] = find (S(:, candidate_start_times_in_tbin(1):candidate_start_times_in_tbin(end)));
       plot((j-1)*estimate_bin_sec + peak_time-max_burst_width, i, '.');
-      plot(candidate_start_times, tst_scores*40, 'Color', 'k')    
-      plot(peak_time*[1 1], [0 31], 'Color', 'r');
-      plot(labeled_times(i_burst)*[1 1], [0 31], 'Color', 'g');	  
-      plot(inferred_times(i_burst)*[1 1], [0 31], 'Color', 'm');	  
-      input(sprintf('burst = %d, press enter', i_burst));    
+      h(1) = plot(candidate_edge_times, tst_scores*40, 'Color', 'k');
+      h(2) = plot(peak_time*[1 1], [0 31], 'Color', 'r');
+      h(3) = plot(labeled_times(i_burst)*[1 1], [0 31], 'Color', 'g');	  
+      h(4) = plot(inferred_times(i_burst)*[1 1], [0 31], 'Color', 'm');
+      legend(h,{'edge scores','peak time','label','inferred'},'Location','NorthEastOutside')
+      %input(sprintf('burst = %d, press enter', i_burst));    
     end
   end
   

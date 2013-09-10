@@ -52,17 +52,19 @@ if ~exist('S',  'var')
 end
 
 burst_peak_times = find_burst_peak(data, labelsData.yesTimes, parms);
+
 [beg_inferred_times, beg_errs, valids] = infer_burst_edge(n_active, ...
 						  burst_peak_times, ...
 						  beg_best_model, ...
-						  parms, S, beg_labels_in_sec);
+						  parms, S, beg_labels_in_sec, true);
 fprintf('Burst begining median error = %g sec\n', median(beg_errs));
 
 [end_inferred_times, end_errs, valids] = infer_burst_edge(n_active, ...
 						  burst_peak_times, ...
 						  end_best_model, ...
-						  parms, S, end_labels_in_sec);
+						  parms, S, end_labels_in_sec, false);
 fprintf('Burst eding median error = %g sec\n', median(end_errs));
+
 durations = end_labels_in_sec - beg_labels_in_sec;
 inferred_durations = end_inferred_times - beg_inferred_times;
 fprintf('Burst duration median error = %g sec\n', median(durations(valids)'-inferred_durations));
