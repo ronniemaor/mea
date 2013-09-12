@@ -2,8 +2,8 @@ function [best_model, AUC, FPRs, TPRs, THRESHs] = train_and_test(features, label
 %
   labels(labels<0) = 0; % change labels from {-1,1} to {0,1}
 
-  method = take_from_struct(parms, 'method', 'lasso');
-  seed = take_from_struct(parms, 'seed', 1);  
+  method = take_from_struct(parms, 'method');
+  seed = take_from_struct(parms, 'seed');
   do_plot = take_from_struct(parms, 'do_plot', false);
   if do_plot
     figure(2); clf; hold on;

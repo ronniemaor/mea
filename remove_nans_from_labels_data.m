@@ -4,4 +4,6 @@ function labelsData = remove_nans_from_labels_data(labelsData)
   labelsData.burstStartTimes = labelsData.burstStartTimes(valids);
   labelsData.burstEndTimes = labelsData.burstEndTimes(valids);  
   labelsData.yesTimes = labelsData.yesTimes(valids);
+
+  fprintf('\tremoved NaN from burstTimes\n');
 end

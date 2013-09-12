@@ -5,11 +5,15 @@ function features = extract_features(n_active, times, f_list, parms)
   num_features = length(f_list);
   features = zeros(num_times, num_features);
   
-  times_in_tbin = ceil((times+0.001) / parms.estimate_bin_sec);
+  times_in_tbin = ceil((times+0.0000001) / parms.estimate_bin_sec);
 
-  if length(unique(times_in_tbin)) ~= length(times_in_tbin)
-    error(' numerical blabl a');
-  end
+  %if length(unique(times_in_tbin)) ~= length(times_in_tbin)
+  %  length(unique(times_in_tbin)) 
+  %  length(times_in_tbin)
+  %  length(times)
+  %  length(unique(times))
+  %  error('\n\n\t\tError: duplicates in extract features %s\n\n', '');
+  %end
   
   
   n0 = n_active(times_in_tbin);
@@ -38,6 +42,13 @@ function features = extract_features(n_active, times, f_list, parms)
      case 'n-2',   features(:,i_f) = nm2;
      case 'n-3',   features(:,i_f) = nm3;
     
+     case 'r+3',   features(:,i_f) = 1 - np3./n0;
+     case 'r+2',   features(:,i_f) = 1 - np2./n0;
+     case 'r+1',   features(:,i_f) = 1 - np1./n0;
+     case 'r-1',   features(:,i_f) = 1 - nm1./n0;
+     case 'r-2',   features(:,i_f) = 1 - nm2./n0;
+     case 'r-3',   features(:,i_f) = 1 - nm3./n0;
+
      case 'd+3',   features(:,i_f) = n0 - np3;
      case 'd+2',   features(:,i_f) = n0 - np2;
      case 'd+1',   features(:,i_f) = n0 - np1;

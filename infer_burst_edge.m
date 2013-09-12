@@ -10,7 +10,7 @@ function [inferred_times, errs, valids] = infer_burst_edge(n_active, ...
   %    threshold ??////???
   
   burst_width_std = take_from_struct(parms, 'burst_width_std', 0.5);  
-  max_burst_width = take_from_struct(parms, 'max_burst_width', 1);
+  max_burst_width = take_from_struct(parms, 'max_burst_width', 0.35);
   estimate_bin_sec = take_from_struct(parms, 'estimate_bin_sec');  
   f_list = take_from_struct(parms, 'f_list');
   method = take_from_struct(parms, 'method');  
@@ -24,7 +24,7 @@ function [inferred_times, errs, valids] = infer_burst_edge(n_active, ...
   inferred_times = zeros(num_bursts,1);
   for i_burst = 1:num_bursts
     peak_time = valid_burst_peak_times(i_burst);
-    
+
     if bStart
         candidate_edge_times = peak_time-max_burst_width : ...
 	    estimate_bin_sec : peak_time+0.1*estimate_bin_sec;
@@ -32,11 +32,13 @@ function [inferred_times, errs, valids] = infer_burst_edge(n_active, ...
         candidate_edge_times = peak_time-1*estimate_bin_sec : ...
 	    estimate_bin_sec : peak_time+max_burst_width;
     end       
-%    if i_burst >= 25
-%      keyboard
-%    end
+
+    [scores, score_times] = score_bursts(data, candidate_edge_times(1), ...
+					 candidate_edge_times(end), parms);
     
-    candidate_edge_times_wide = peak_time-2 : estimate_bin_sec : peak_time+2;        
+    
+
+    candidate_edge_times_forplot = peak_time-2 : estimate_bin_sec : peak_time+2;        
     
     % Preprocess
     features = extract_features(n_active, candidate_edge_times, f_list, parms);
@@ -52,10 +54,10 @@ function [inferred_times, errs, valids] = infer_burst_edge(n_active, ...
       figure(2) ; clf; hold on;
       
       % Background spikes 
-      candidate_start_times_wide_in_tbin = ceil(candidate_edge_times_wide / estimate_bin_sec);
-      [i,j] = find (S(:, candidate_start_times_wide_in_tbin(1):candidate_start_times_wide_in_tbin(end)));
-      plot((j-1)*estimate_bin_sec + min(candidate_edge_times_wide), i, ...
-	   '.', 'color', 'k');
+      candidate_start_times_forplot_in_tbin = ceil(candidate_edge_times_forplot / estimate_bin_sec);
+      [i,j] = find (S(:, candidate_start_times_forplot_in_tbin(1):candidate_start_times_forplot_in_tbin(end)));
+      plot((j-1)*estimate_bin_sec + min(candidate_edge_times_forplot), ...
+	   i, '.', 'color', 'k');
       
       % Spikes considered to be in burst
       candidate_start_times_in_tbin = ceil(candidate_edge_times / estimate_bin_sec);
