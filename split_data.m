@@ -1,7 +1,8 @@
-function [trn_data, tst_data, trn_lbls, tst_lbls] ...
-    = split_data(data, lbls, seed, fold)
+function [trn_data, tst_data, trn_labels, tst_labels] ...
+    = split_data(data, labels, seed, fold)
 %
-% SPLIT_DATA(DATA, LBLS, SEED, FOLD)
+% [trn_data, tst_data, trn_labels, tst_labels] = 
+%               split_data(data, labels, seed, fold)
 % 
 
   % CV5  
@@ -23,8 +24,8 @@ function [trn_data, tst_data, trn_lbls, tst_lbls] ...
   
   trn_data = data(trn_inds,:);
   tst_data = data(tst_inds,:);
-  trn_lbls = lbls(trn_inds);
-  tst_lbls = lbls(tst_inds);
+  trn_labels = labels(trn_inds);
+  tst_labels = labels(tst_inds);
   
   set_rand(RANDSTATE);
 end

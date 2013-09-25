@@ -15,7 +15,7 @@ function features = extract_features(n_active, times, f_list, parms)
   %  error('\n\n\t\tError: duplicates in extract features %s\n\n', '');
   %end
   
-  
+  max_active = max(n_active(:));
   n0 = n_active(times_in_tbin);
   np1 = n_active(times_in_tbin+1);
   np2 = n_active(times_in_tbin+2);
@@ -31,6 +31,7 @@ function features = extract_features(n_active, times, f_list, parms)
   nm5 = n_active(times_in_tbin-5);
   nm6 = n_active(times_in_tbin-6);  
 
+  laplace_smoother = 1/ (5*max_active);
   for i_f = 1:num_features
     f = f_list{i_f};
     switch f
@@ -42,12 +43,12 @@ function features = extract_features(n_active, times, f_list, parms)
      case 'n-2',   features(:,i_f) = nm2;
      case 'n-3',   features(:,i_f) = nm3;
     
-     case 'r+3',   features(:,i_f) = 1 - np3./n0;
-     case 'r+2',   features(:,i_f) = 1 - np2./n0;
-     case 'r+1',   features(:,i_f) = 1 - np1./n0;
-     case 'r-1',   features(:,i_f) = 1 - nm1./n0;
-     case 'r-2',   features(:,i_f) = 1 - nm2./n0;
-     case 'r-3',   features(:,i_f) = 1 - nm3./n0;
+     case 'r+3',   features(:,i_f) = 1 - np3./(n0 + laplace_smoother);
+     case 'r+2',   features(:,i_f) = 1 - np2./(n0 + laplace_smoother);
+     case 'r+1',   features(:,i_f) = 1 - np1./(n0 + laplace_smoother);
+     case 'r-1',   features(:,i_f) = 1 - nm1./(n0 + laplace_smoother);
+     case 'r-2',   features(:,i_f) = 1 - nm2./(n0 + laplace_smoother);
+     case 'r-3',   features(:,i_f) = 1 - nm3./(n0 + laplace_smoother);
 
      case 'd+3',   features(:,i_f) = n0 - np3;
      case 'd+2',   features(:,i_f) = n0 - np2;
