@@ -77,4 +77,6 @@ findMixture(make_parms('data',data, 'suffixes', {'baseline-yuval', 'early'}, 'us
 showROC(make_parms('data',data,'suffixes',{'merged'},'wEdges',0.65,'threshold',0.1641));
 checkAccuracy(make_parms('data',data,'fileSuffix','merged','threshold',0.1641,'wEdges',0.65))
 
-hourlyBurstRate(make_parms('data',data, 'wEdges',0.1, 'threshold', 0.1125))
+hourlyBurstRate(data, make_parms('wEdges',0.1, 'threshold', 0.1125))
+trainBurstEdges()
+hourlyBurstStats(data,parms)

@@ -19,10 +19,13 @@ function [inferred_times, errs, valids] = infer_burst_edge(n_active, ...
   f_list = take_from_struct(parms, 'f_list');
   method = take_from_struct(parms, 'method');  
   dd = estimate_bin_sec;
+  bHaveLabels = ~isnan(labels_in_sec);
   
   valids = ~isnan(burst_peak_times);
   valid_burst_peak_times = burst_peak_times(valids);
-  labeled_times = labels_in_sec(valids);
+  if bHaveLabels
+    labeled_times = labels_in_sec(valids);
+  end
   
   num_bursts = length(valid_burst_peak_times);
   errs = zeros(num_bursts,1);
@@ -68,16 +71,17 @@ function [inferred_times, errs, valids] = infer_burst_edge(n_active, ...
     inferred_times(i_burst) = (ind-1)*dd + min(candidate_edge_times);
     if exist('beg_inferred_times', 'var') & inferred_times(i_burst) ...            
             < beg_inferred_times(i_burst) + 2 * dd;
-        fprintf('shift end = %4.2f from beg = %4.2f i_burst=%d\n', ...
-                inferred_times(i_burst), beg_inferred_times(i_burst), i_burst);
+%         fprintf('shift end = %4.2f from beg = %4.2f i_burst=%d\n', ...
+%                 inferred_times(i_burst), beg_inferred_times(i_burst), i_burst);
         inferred_times(i_burst) = beg_inferred_times(i_burst) + 2*dd;
     end
 
-    errs(i_burst) = abs(inferred_times(i_burst) - labeled_times(i_burst));
-    inferred_times(i_burst);
-    
+    if bHaveLabels
+        errs(i_burst) = abs(inferred_times(i_burst) - labeled_times(i_burst));
+    end
+        
     do_plot = take_from_struct(parms, 'do_plot', true);
-    if do_plot & bStart<1
+    if do_plot && ~bStart && bHaveLabels
       LW = 'Linewidth';
       CLR = 'Color';
       clr1 = [0.5 0.5 0.99];
