@@ -1,9 +1,12 @@
-function trainBurstEdges()
-    % setup
-    init
+function trainBurstEdges(dataname, parms)
+
+    if ~exist('dataname', 'var')
+        dataname = 'bac10a';
+    end
+
     
     % Load the data
-    data = loadData('bac10a');
+    data = loadData(dataname);
   
     % Load labels 
     labelsData = loadLabels(data.sessionKey, 'merged-yuval');
@@ -11,14 +14,13 @@ function trainBurstEdges()
     labelsData = remove_duplicates_from_labels_data(labelsData);
 
     % Shift begin times that have <=1 spikes
-    n_active = times_to_num_active_units(data, parms, estimate_bin_sec);  
+    n_active = times_to_num_active_units(data, parms, parms.estimate_bin_sec);  
     beg_labels_in_sec = tighten_burst_start_end_labels(n_active, labelsData.burstStartTimes, true, parms);
     end_labels_in_sec = tighten_burst_start_end_labels(n_active, labelsData.burstEndTimes, false, parms);
 
-    [f_list, parms] = take_from_struct(parms, 'f_list', { ...
-        'r+1', 'r+2', 'r-1', 'r-2', ...
-        'n0' , 'n-1', 'n-2', 'n+1', 'n+2' ...
-    });
+    default_f_list = { 'r+1', 'r+2', 'r-1', 'r-2', 'n0' , 'n-1', ...
+                       'n-2', 'n+1', 'n+2' };
+    [f_list, parms] = take_from_struct(parms, 'f_list', default_f_list);
 
     % Train and Test
     [beg_features, beg_labels] = build_train_set(n_active, beg_labels_in_sec, true, parms);
