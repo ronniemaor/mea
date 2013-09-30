@@ -79,4 +79,5 @@ checkAccuracy(make_parms('data',data,'fileSuffix','merged','threshold',0.1641,'w
 
 hourlyBurstRate(data, make_parms('wEdges',0.1, 'threshold', 0.1125))
 trainBurstEdges()
+[beg_times, end_times] = infer_all_bursts(data,parms);
 hourlyBurstStats(data,parms)
