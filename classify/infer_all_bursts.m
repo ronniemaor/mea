@@ -1,4 +1,18 @@
-function [beg_times, end_times] = infer_all_bursts(data,parms)
+function [beg_times, end_times] = infer_all_bursts(data,parms,bForce)
+    if ~exist('bForce','var')
+        bForce = false;
+    end
+
+    classifyDir = fileparts(mfilename('fullpath'));
+    fname = sprintf('%s/burst-edges-%s.mat',classifyDir,data.sessionKey);
+    
+    if exist(fname,'file') && ~bForce
+        cache = load(fname);
+        beg_times = cache.beg_times;
+        end_times = cache.end_times;
+        return 
+    end
+    
     tHour = 20*60;
     tStart = 0;
     tEnd = data.maxUnitFullHours * tHour;
@@ -28,5 +42,6 @@ function [beg_times, end_times] = infer_all_bursts(data,parms)
     end
     beg_times = raw_beg_times(~isnan(raw_beg_times));
     end_times = raw_end_times(~isnan(raw_end_times));
-    %fprintf('\t%d raw -> %d unique\n',length(raw_beg_times),length(beg_times))
+    
+    save(fname,'beg_times','end_times');
 end
