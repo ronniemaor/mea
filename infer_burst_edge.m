@@ -32,6 +32,9 @@ function [inferred_times, errs, valids] = infer_burst_edge(n_active, ...
   inferred_times = zeros(num_bursts,1);
   for i_burst = 1:num_bursts
     peak_time = valid_burst_peak_times(i_burst);
+    if peak_time < 1 || peak_time > length(n_active)*estimate_bin_sec - 1
+        continue; % bursts too near the edge cause the calculation to blow up when looking at surrounding times
+    end
     candidate_edge_times_forplot = (peak_time-0.6):dd:(peak_time+1.6); 
 
     if bStart

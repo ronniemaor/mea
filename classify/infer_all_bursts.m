@@ -32,8 +32,7 @@ function [beg_times, end_times] = infer_all_bursts(data,parms,bForce)
     % remove overlapping bursts
     lastEnd = -1;
     for i=1:length(raw_beg_times)
-        if raw_beg_times(i) > lastEnd
-            assert(raw_end_times(i) > raw_beg_times(i))
+        if raw_beg_times(i) > lastEnd && raw_end_times(i) > raw_beg_times(i)
             lastEnd = raw_end_times(i);
         else
             raw_beg_times(i) = NaN;
