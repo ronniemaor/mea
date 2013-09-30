@@ -1,4 +1,4 @@
-function trainBurstEdges(dataname, parms)
+function models = trainBurstEdges(dataname, parms)
 
     if ~exist('dataname', 'var')
         dataname = 'bac10a';
