@@ -1,4 +1,4 @@
-function hourlyBurstStats(data,parms)
+function hourlyBurstRate(data, parms)
     bNormalize = take_from_struct(parms,'bNormalize',true);
 
     [beg_times, end_times] = infer_all_bursts(data,parms);
