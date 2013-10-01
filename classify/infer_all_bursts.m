@@ -26,10 +26,13 @@ function [beg_times, end_times] = infer_all_bursts(data,parms,bForce)
     parms.f_list = models.f_list;
     n_active = times_to_num_active_units(data, parms, parms.estimate_bin_sec);
     S = data_to_sparse_mat(data, parms);
+    fprintf('Infer burst beginnings\n')
     raw_beg_times = infer_burst_edge(n_active, peak_times, models.beg_model, parms, S, NaN, true, data);
+    fprintf('Infer burst endings\n')
     raw_end_times = infer_burst_edge(n_active, peak_times, models.end_model, parms, S, NaN, false, data, raw_beg_times);
     
     % remove overlapping bursts
+    fprintf('Remove overlapping bursts\n')
     lastEnd = -1;
     for i=1:length(raw_beg_times)
         if raw_beg_times(i) > lastEnd && raw_end_times(i) > raw_beg_times(i)
