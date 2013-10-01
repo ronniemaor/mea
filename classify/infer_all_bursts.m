@@ -3,8 +3,8 @@ function [beg_times, end_times] = infer_all_bursts(data,parms,bForce)
         bForce = false;
     end
 
-    classifyDir = fileparts(mfilename('fullpath'));
-    fname = sprintf('%s/burst-edges-%s.mat',classifyDir,data.sessionKey);
+    baseDataDir = getBaseDataDir();
+    fname = sprintf('%s/cache/burst-edges-%s.mat',baseDataDir,data.sessionKey);
     
     if exist(fname,'file') && ~bForce
         cache = load(fname);
