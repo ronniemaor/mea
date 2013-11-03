@@ -36,6 +36,8 @@ function sessionConfigs = getAllSessionConfigs()
     sessionConfigs.misc9 = newConfig('misc/23.6.13 1aKO_10uM_bac.mat',3); % done
     sessionConfigs.misc10 = newConfig('misc/24.3.13_40uM_CNQX.mat',4); % done
     sessionConfigs.misc11 = newConfig('misc/25.9.13_40uM_CNQX.mat',4); % done. this is very different behavior from 24.3.13_40uM_CNQX. Is it really the same condition?
+    sessionConfigs.misc12 = newConfig('misc/31.3.13_control.mat',4);
+    
 end
 
 function config = newConfig(filePath, nBaselineHours)
