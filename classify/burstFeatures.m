@@ -4,15 +4,17 @@ function [features, featureTimes] = burstFeatures(data, tStart, tEnd, parms)
 
     % compute a vector of spike counts at 'bin..' resolution
     nBins = floor((tEnd-tStart) / tBin);
-    unitActiveBins = zeros(data.nUnits,nBins);
+    totalActiveBins = zeros(1,nBins);
     for iUnit = 1:data.nUnits
+        singleUnitActiveBins = zeros(1,nBins);
         times = data.unitSpikeTimes{iUnit};
         times = times(times > tStart & times < tEnd) - tStart;
         bins = unique(ceil(times/tBin));
         bins = bins(bins <= nBins);
-        unitActiveBins(iUnit,bins) = 1;
+        singleUnitActiveBins(bins) = 1;
+        totalActiveBins = totalActiveBins + singleUnitActiveBins;
     end
-    pActive = sum(unitActiveBins,1) / data.nUnits;
+    pActive = totalActiveBins / data.nUnits;
     
     derivative = conv(pActive',0.5 * [1 1 -1 -1],'valid');
     activity = conv(pActive',0.5 * [1 1],'valid');
