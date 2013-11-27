@@ -13,7 +13,7 @@ function hourlyBurstDuration(data, parms)
         hourEnd = end_times(pos);
         durations = hourEnd - hourBeg;
         hourlyDurationMean(iHour) = mean(durations);
-        hourlyDurationMean(iHour) = std(durations);
+        hourlyDurationStd(iHour) = std(durations);
     end
     
     rates = firingRates(cell2mat(data.unitSpikeTimes')) ./ data.nUnits;
