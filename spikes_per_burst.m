@@ -1,5 +1,4 @@
-function num_spikes = spikes_per_burst(data,parms)
-    [beg_times, end_times] = infer_all_bursts(data,parms);
+function num_spikes = spikes_per_burst(data,beg_times,end_times)
     nBursts = length(beg_times);
     assert(length(end_times) == nBursts);
 
