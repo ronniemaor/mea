@@ -87,6 +87,7 @@ data = loadData(<sessionKey>) % look at number of discarded units
 figure; plot(firingRates(cell2mat(data.unitSpikeTimes'))); % sanity - look at firing rates. adjust baseline hours in session config as needed
 init % get parms
 [beg_times, end_times] = infer_all_bursts(data,parms); % also saves new cache file
+num_spikes = spikes_per_burst(data,parms);
 hourlyBurstRate(data,parms) % sanity - look at burst rate per hour
 % send cache file to Edden
 
